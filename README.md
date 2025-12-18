@@ -90,19 +90,25 @@ Her tuşa basıldığında ilk harf yazılır, çoklu basışla diğer harfe ge�
 3. Build > Build Bundle(s) / APK(s) > Build APK(s)
 4. APK dosyası `app/build/outputs/apk/debug/` klasöründe oluşacaktır
 
-### Alternatif: Doğrudan Çalıştırma
+### Alternatif: Doğrudan Çalıştırma (Önerilen)
 1. Android cihazınızı USB ile bağlayın veya emulator başlatın
 2. Android Studio'da "Run" butonuna (yeşil üçgen) tıklayın veya `Shift + F10` tuşlarına basın
 3. Hedef cihazınızı seçin
 4. Uygulama otomatik olarak derlenip yüklenecektir
+5. **Kurulum ekranı açılacaktır** - Bu ekran klavyeyi nasıl etkinleştireceğinizi gösterir
 
 ### Klavyeyi Etkinleştirme
 
+Uygulama ilk açıldığında bir **kurulum rehberi** ekranı görünecektir. Bu ekran:
+- Klavyenin etkinleştirilip etkinleştirilmediğini gösterir
+- Klavye ayarlarına direkt yönlendirme sağlar
+- Adım adım kurulum talimatları içerir
+
 #### Adım 1: Klavyeyi Aktif Hale Getirin
-1. Cihazınızda **Ayarlar** uygulamasını açın
-2. **Sistem** > **Diller ve giriş** > **Ekrandaki klavye** bölümüne gidin
-3. **Klavyeleri yönet** seçeneğine tıklayın
-4. **Türkçe Klavyem** yanındaki düğmeyi aktif edin
+1. Kurulum ekranındaki **"Klavyeyi Etkinleştir"** butonuna tıklayın
+2. Açılan ayarlar ekranında **Türkçe Klavyem** yanındaki düğmeyi aktif edin
+3. Uyarı mesajını okuyun ve **Tamam**'a basın
+4. Geri tuşuna basarak uygulamaya dönün
 
 #### Adım 2: Klavyeyi Seçin
 1. Herhangi bir uygulamada (Mesajlar, Notlar, vb.) bir metin alanına dokunun
