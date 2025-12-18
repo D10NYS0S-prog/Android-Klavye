@@ -36,22 +36,31 @@ TurkceKlavyem/
 ### Mevcut Özellikler
 - ✅ Temel Android InputMethodService altyapısı
 - ✅ T9 ve T12 tuş haritaları (Türkçe karakter destekli)
-- ✅ 3x4 tuş düzeni (0-9, *, #)
+- ✅ 3x4 T9 tuş düzeni (0-9, *, #)
+- ✅ 4-satır T12 QWERTY düzeni (shift, sembol tuşlarıyla)
+- ✅ **Kelime Tahmini Sistemi** - T9 modunda otomatik kelime önerisi
+- ✅ **Çoklu Basış Desteği** - Aynı tuşa hızlıca basarak farklı karakterler
+- ✅ **Shift Tuşu** - Büyük/küçük harf geçişi
+- ✅ **WordDatabase** - Kelime öğrenme ve tahmin sistemi
 - ✅ Silme (Backspace) ve Enter tuşları
 - ✅ T9/T12 mod değiştirme düğmesi
-- ✅ Temel tuş dinleyicileri ve giriş yönetimi
+- ✅ Composing text desteği (gerçek zamanlı öneri)
 
 ### Gelecek Özellikler (TODO)
-- 🔄 Kelime tahmini sistemi
-- 🔄 Türkçe kelime veritabanı entegrasyonu
-- 🔄 T12 modunda çoklu tuş basışı desteği
-- 🔄 Sembol ve özel karakter modu
-- 🔄 Kullanıcı kelime öğrenme sistemi
+- 🔄 PDF okuma ve kelime öğrenme (altyapı hazır)
+- 🔄 SQLite/Room veritabanı entegrasyonu
+- 🔄 Daha geniş Türkçe sözlük
+- 🔄 Uzun basış popup menüleri
+- 🔄 Sembol klavyesi (12# tuşu)
 - 🔄 Tema ve görünüm özelleştirmeleri
 
 ## 🔧 Teknik Detaylar
 
-### T9 Tuş Haritası
+### T9 Modu - Kelime Tahmini
+
+T9 modunda sayısal tuşlarla yazarken otomatik kelime tahmini yapılır:
+
+**Tuş Haritası:**
 ```
 1: . , ? ! 1
 2: A B C Ç 2
@@ -65,16 +74,44 @@ TurkceKlavyem/
 0: Boşluk 0
 ```
 
-### T12 Tuş Düzeni
-T12 modu QWERTY tarzı kompakt bir klavye düzenidir. Her tuşta iki harf bulunur:
+**Kullanım Örneği:**
+```
+6-3-7-5-2-2-2 tuşlarına basın
+→ Ekranda "merhaba" önerisi görünür
+→ * tuşu ile diğer önerilere geçin
+→ # tuşu ile öneriyi kabul edin
+→ Boşluk tuşu ile de kabul edilir
+```
+
+### T12 Modu - Çoklu Basış
+
+T12 modu QWERTY tarzı kompakt bir klavye düzenidir. Yeni düzen:
 
 ```
 Satır 1: [qw] [er] [ty] [uı] [op]
-Satır 2: [as] [df] [gğ] [jk] [lü]
-Satır 3: [zx] [cç] [bn] [mö]
+Satır 2: [as] [df] [gğ] [jk] [l-]
+Satır 3: [⇧] [zx] [cç] [bn] [m'] [⌫]
+Satır 4: [12#][,] [boşluk] [.] [↵]
 ```
 
-Her tuşa basıldığında ilk harf yazılır, çoklu basışla diğer harfe geçilir.
+**Çoklu Basış Özelliği:**
+- Aynı tuşa 800ms içinde tekrar basılırsa karakterler arasında geçiş yapar
+- Örnek: **gh** tuşuna basınca → g, ğ, h, G, Ğ, H (sırayla döner)
+- **⇧ (Shift)** tuşu aktifken büyük harf
+
+**Kullanım Örnekleri:**
+```
+"merhaba" yazmak için:
+m' → e-r → e-r → g-ğ → a-s → b-n → a-s
+(her tuşa 1x basın, ilk harf otomatik gelir)
+
+"Ğ" karakteri için:
+1. ⇧ (shift) tuşuna bas
+2. g-ğ tuşuna 2x hızlıca bas → Ğ
+
+"ğ" karakteri için:
+g-ğ tuşuna 2x hızlıca bas → ğ
+```
 
 ## 🚀 Kurulum ve Kullanım
 
