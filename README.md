@@ -144,6 +144,15 @@ Uygulama ilk açıldığında bir **kurulum rehberi** ekranı görünecektir. Bu
 
 ### Sorun Giderme
 
+#### Android Studio'da "No Module" Hatası
+Projeyi açarken "No module" hatası alıyorsanız, **TROUBLESHOOTING.md** dosyasına bakın. Kısa çözüm:
+1. Android Studio'yu kapatın
+2. `.gradle` ve `.idea` klasörlerini silin
+3. Projeyi **File > Open** ile tekrar açın
+4. Gradle senkronizasyonunu bekleyin
+
+Detaylı çözümler için: **[TROUBLESHOOTING.md](TROUBLESHOOTING.md)**
+
 #### Klavye Görünmüyorsa
 1. Ayarlar > Uygulamalar > Türkçe Klavyem > İzinler'i kontrol edin
 2. Cihazı yeniden başlatın
