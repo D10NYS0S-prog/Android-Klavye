@@ -25,26 +25,47 @@ val T9_MAPPING: Map<Int, String> = mapOf(
  * T12 Tuş Düzeni - QWERTY tarzı kompakt klavye düzeni
  * Her tuşta iki harf bulunur, çoklu basış ile karakterler arasında geçiş yapılır
  * 
- * Düzen:
+ * Yeni Düzen:
  * Satır 1: [qw] [er] [ty] [uı] [op]
- * Satır 2: [as] [df] [gğ] [jk] [lü]
- * Satır 3: [zx] [cç] [bn] [mö]
+ * Satır 2: [as] [df] [gğ] [jk] [l-]
+ * Satır 3: [⇧][zx] [cç] [bn] [m'][⌫]
+ * Satır 4: [12#][,] [boşluk][.] [↵]
  */
 val T12_LAYOUT = mapOf(
-    "qw" to "qw",
-    "er" to "er",
-    "ty" to "ty",
-    "ui" to "uı",
-    "op" to "op",
-    "as" to "as",
-    "df" to "df",
-    "gh" to "gğ",
-    "jk" to "jk",
-    "lu" to "lü",
-    "zx" to "zx",
-    "cv" to "cç",
-    "bn" to "bn",
-    "mo" to "mö"
+    "qw" to "qwQW",
+    "er" to "erER",
+    "ty" to "tyTY",
+    "ui" to "uıUİ",
+    "op" to "opöOPÖ",
+    "as" to "asAS",
+    "df" to "dfDF",
+    "gh" to "gğhGĞH",  // gh tuşuna basılı tutunca: g, ğ, G, Ğ, h, H
+    "jk" to "jkJK",
+    "l" to "l-L_",
+    "zx" to "zxZX",
+    "cv" to "cçvCÇV",
+    "bn" to "bnBN",
+    "m" to "m'öM'Ö"
+)
+
+/**
+ * T12 tuş ID'lerini karakter eşlemelerine bağlar
+ */
+val T12_KEY_MAP = mapOf(
+    "key_qw" to "qwQW",
+    "key_er" to "erER",
+    "key_ty" to "tyTY",
+    "key_ui" to "uıUİ",
+    "key_op" to "opöOPÖ",
+    "key_as" to "asAS",
+    "key_df" to "dfDF",
+    "key_gh" to "gğhGĞH",
+    "key_jk" to "jkJK",
+    "key_l" to "l-L_",
+    "key_zx" to "zxZX",
+    "key_cv" to "cçvCÇV",
+    "key_bn" to "bnBN",
+    "key_m" to "m'öM'Ö"
 )
 
 /**
@@ -64,22 +85,57 @@ fun getCharacterForKeyPress(key: Int, pressCount: Int): Char? {
 
 /**
  * T12 tuşu için çoklu basış ile karakter seçimi
- * @param chars Tuştaki karakterler (örn: "qw")
+ * @param chars Tuştaki karakterler (örn: "qwQW")
  * @param pressCount Kaç kez basıldığı
+ * @param isShiftActive Shift tuşu aktif mi
  * @return Seçilen karakter
  */
-fun getT12Character(chars: String, pressCount: Int): Char? {
+fun getT12Character(chars: String, pressCount: Int, isShiftActive: Boolean = false): Char? {
     if (chars.isEmpty()) return null
     val index = (pressCount - 1) % chars.length
-    return chars[index]
+    var char = chars[index]
+    
+    // Shift aktifse ve küçük harfse büyük harfe çevir
+    if (isShiftActive && char.isLowerCase()) {
+        char = char.uppercaseChar()
+    }
+    
+    return char
 }
 
 /**
- * Verilen tuş dizisini sayısal stringe çevirir
+ * Tuş dizisinden kelime tahmini için kod dizisi oluşturur
  * T9 kelime tahmini için kullanılır
  * @param keys Basılan tuşların listesi
  * @return Sayısal dizi string
  */
 fun keysToSequence(keys: List<Int>): String {
     return keys.joinToString("")
+}
+
+/**
+ * T12 tuş dizisinden kelime tahmini için karakter dizisi oluşturur
+ * @param keySequence Basılan T12 tuşlarının listesi (örn: ["m", "er", "gh", "as", "bn", "as"])
+ * @return Olası kelime kombinasyonları
+ */
+fun t12KeysToPattern(keySequence: List<String>): List<String> {
+    if (keySequence.isEmpty()) return listOf("")
+    
+    val firstKey = keySequence.first()
+    val chars = T12_LAYOUT[firstKey] ?: return listOf("")
+    
+    if (keySequence.size == 1) {
+        return chars.map { it.toString() }
+    }
+    
+    val restPatterns = t12KeysToPattern(keySequence.drop(1))
+    val result = mutableListOf<String>()
+    
+    for (char in chars) {
+        for (pattern in restPatterns) {
+            result.add(char + pattern)
+        }
+    }
+    
+    return result
 }

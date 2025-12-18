@@ -6,7 +6,7 @@
     android:background="#ECECEC"
     android:padding="4dp">
 
-    <!-- Mod Değiştirme ve Silme Satırı -->
+    <!-- Mod Değiştirme Satırı -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -16,22 +16,13 @@
 
         <Button
             android:id="@+id/mode_switch"
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:layout_weight="2"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
             android:text="T9/T12"
             android:textSize="12sp" />
-
-        <Button
-            android:id="@+id/key_backspace"
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:layout_weight="1"
-            android:text="⌫"
-            android:textSize="18sp" />
     </LinearLayout>
 
-    <!-- 1. Satır: qw, er, ty, ui, op -->
+    <!-- 1. Satır: qw, er, ty, uı, op -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -84,7 +75,7 @@
             android:textAllCaps="false" />
     </LinearLayout>
 
-    <!-- 2. Satır: as, df, gh, jk, lü -->
+    <!-- 2. Satır: as, df, gh, jk, l- -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -129,21 +120,30 @@
             android:textAllCaps="false" />
 
         <Button
-            android:id="@+id/key_lu"
+            android:id="@+id/key_l"
             android:layout_width="0dp"
             android:layout_height="60dp"
             android:layout_weight="1"
-            android:text="lü"
+            android:text="l-"
             android:textAllCaps="false" />
     </LinearLayout>
 
-    <!-- 3. Satır: zx, cv, bn, mö -->
+    <!-- 3. Satır: shift, zx, cv, bn, m', backspace -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center"
         android:layout_marginBottom="4dp">
+
+        <Button
+            android:id="@+id/key_shift"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="4dp"
+            android:text="⇧"
+            android:textSize="18sp" />
 
         <Button
             android:id="@+id/key_zx"
@@ -173,15 +173,24 @@
             android:textAllCaps="false" />
 
         <Button
-            android:id="@+id/key_mo"
+            android:id="@+id/key_m"
             android:layout_width="0dp"
             android:layout_height="60dp"
             android:layout_weight="1"
-            android:text="mö"
+            android:layout_marginEnd="4dp"
+            android:text="m'"
             android:textAllCaps="false" />
+
+        <Button
+            android:id="@+id/key_backspace"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_weight="1"
+            android:text="⌫"
+            android:textSize="18sp" />
     </LinearLayout>
 
-    <!-- 4. Satır: Space, ., Enter -->
+    <!-- 4. Satır: 12#, comma, space, dot, enter -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -189,12 +198,30 @@
         android:gravity="center">
 
         <Button
+            android:id="@+id/key_symbols"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="4dp"
+            android:text="12#"
+            android:textSize="12sp" />
+
+        <Button
+            android:id="@+id/key_comma"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="4dp"
+            android:text="," />
+
+        <Button
             android:id="@+id/key_space"
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_weight="3"
             android:layout_marginEnd="4dp"
-            android:text="Boşluk" />
+            android:text="Boşluk"
+            android:textSize="12sp" />
 
         <Button
             android:id="@+id/key_dot"
