@@ -33,6 +33,29 @@ TurkceKlavyem/
 
 ## ✨ Özellikler
 
+## 🎨 Tasarım ve Tema
+
+### Modern Material Design
+Uygulama, profesyonel bir görünüm için Material Design prensipleriyle tasarlanmıştır:
+
+**Özellikler:**
+- ✅ Light ve Dark tema desteği
+- ✅ Rounded corners (8dp yuvarlat köşeler)
+- ✅ Press feedback (basma efekti)
+- ✅ Elevation (yükseklik) efektleri
+- ✅ Özelleştirilebilir renkler ve boyutlar
+- ✅ Professional button styling
+
+**Light Tema:**
+- Temiz beyaz tuşlar (#FFFFFF)
+- Açık gri keyboard arkaplanı (#ECEFF1)
+- Functional tuşlar için mavi-gri vurgu (#CFD8DC)
+
+**Dark Tema:**
+- Koyu mavi-gri arkaplan (#263238)
+- Medium gri tuşlar (#37474F)
+- Yüksek kontrast metin
+
 ### Mevcut Özellikler
 - ✅ Temel Android InputMethodService altyapısı
 - ✅ T9 ve T12 tuş haritaları (Türkçe karakter destekli)
