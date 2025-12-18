@@ -2,6 +2,51 @@
 
 Bu doküman, Android Klavye projesini Android Studio'da açarken karşılaşılan yaygın sorunları ve çözümlerini içerir.
 
+## 🔴 "Module not specified" / "Error: Module not specified" Hatası
+
+### Sorun
+"Module not specified" veya "Error: Module not specified" hatası alıyorsanız, run configuration eksik veya hatalı demektir.
+
+### Çözüm 1: Otomatik Run Configuration (Önerilen)
+
+1. **File > Sync Project with Gradle Files** yapın
+2. Android Studio otomatik olarak run configuration oluşturacak
+3. Toolbar'da "app" seçili olmalı
+4. Yeşil **Run** butonuna tıklayın
+
+### Çözüm 2: Manuel Run Configuration Oluşturma
+
+1. **Run > Edit Configurations** menüsüne gidin (veya toolbar'da dropdown > "Edit Configurations")
+
+2. Sol üst köşede **"+"** butonuna tıklayın
+
+3. **Android App** seçin
+
+4. Ayarları yapın:
+   - **Name**: app
+   - **Module**: app (veya TurkceKlavyem.app)
+   - **Launch**: Default Activity
+
+5. **Apply** ve **OK** tıklayın
+
+### Çözüm 3: Gradle Sync ve Rebuild
+
+1. **File > Invalidate Caches and Restart**
+2. Yeniden başladıktan sonra:
+   - **File > Sync Project with Gradle Files**
+   - **Build > Clean Project**
+   - **Build > Rebuild Project**
+3. Run configuration'ı kontrol edin
+
+### Çözüm 4: .idea Klasörünü Yenileme
+
+Eğer sorun devam ediyorsa:
+1. Android Studio'yu kapatın
+2. `.idea` klasörünü silin
+3. Projeyi yeniden açın
+4. Gradle sync'i bekleyin
+5. Run configuration otomatik oluşacak
+
 ## 🔴 "No Module" Hatası
 
 ### Sorun
