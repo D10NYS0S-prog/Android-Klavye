@@ -82,18 +82,74 @@ Her tuşa basıldığında ilk harf yazılır, çoklu basışla diğer harfe ge�
 - Android Studio Arctic Fox veya üzeri
 - Android SDK 21 (Lollipop) veya üzeri
 - Kotlin 1.9.20
+- Android cihaz veya emulator
 
 ### Derleme Adımları
 1. Projeyi Android Studio'da açın
 2. Gradle senkronizasyonunu bekleyin
 3. Build > Build Bundle(s) / APK(s) > Build APK(s)
+4. APK dosyası `app/build/outputs/apk/debug/` klasöründe oluşacaktır
+
+### Alternatif: Doğrudan Çalıştırma
+1. Android cihazınızı USB ile bağlayın veya emulator başlatın
+2. Android Studio'da "Run" butonuna (yeşil üçgen) tıklayın veya `Shift + F10` tuşlarına basın
+3. Hedef cihazınızı seçin
+4. Uygulama otomatik olarak derlenip yüklenecektir
 
 ### Klavyeyi Etkinleştirme
-1. APK'yı cihazınıza yükleyin
-2. Ayarlar > Sistem > Diller ve giriş > Ekrandaki klavye
-3. "Türkçe Klavyem"i etkinleştirin
-4. Herhangi bir metin alanına tıklayın ve klavye seçiciyi açın
-5. "Türkçe Klavyem"i seçin
+
+#### Adım 1: Klavyeyi Aktif Hale Getirin
+1. Cihazınızda **Ayarlar** uygulamasını açın
+2. **Sistem** > **Diller ve giriş** > **Ekrandaki klavye** bölümüne gidin
+3. **Klavyeleri yönet** seçeneğine tıklayın
+4. **Türkçe Klavyem** yanındaki düğmeyi aktif edin
+
+#### Adım 2: Klavyeyi Seçin
+1. Herhangi bir uygulamada (Mesajlar, Notlar, vb.) bir metin alanına dokunun
+2. Klavye açıldığında, alt tarafta bulunan **klavye simgesine** dokunun
+3. Açılır menüden **Türkçe Klavyem**'i seçin
+
+#### Adım 3: Modlar Arasında Geçiş
+- **T9 Modu**: Sayısal tuşlarla, çoklu basış ile harf girişi
+- **T12 Modu**: QWERTY düzeninde, her tuşta iki harf
+- **Mod Değiştirme**: Klavyenin üst kısmındaki **T9/T12** butonuna basın
+
+### Test Senaryoları
+
+#### T9 Modunu Test Etme
+1. T9 modunda olduğunuzdan emin olun
+2. Tuş **2**'ye bir kez basın → "A" yazmalı
+3. Tuş **2**'ye iki kez basın → "B" yazmalı
+4. Tuş **2**'ye üç kez basın → "C" yazmalı
+5. Tuş **2**'ye dört kez basın → "Ç" yazmalı
+6. **0** tuşuna basın → Boşluk eklemeli
+
+#### T12 Modunu Test Etme
+1. **T9/T12** butonuna basarak T12 moduna geçin
+2. **[qw]** tuşuna bir kez basın → "q" yazmalı
+3. **[qw]** tuşuna iki kez basın → "w" yazmalı
+4. **[gğ]** tuşuna basarak Türkçe "ğ" karakterini test edin
+5. **Boşluk** tuşuna basın → Boşluk eklemeli
+
+#### Diğer Fonksiyonlar
+- **⌫ (Backspace)**: Son karakteri silmeli
+- **↵ (Enter)**: Yeni satıra geçmeli
+- **. (Nokta)**: Nokta karakteri eklemeli (T12 modunda)
+
+### Sorun Giderme
+
+#### Klavye Görünmüyorsa
+1. Ayarlar > Uygulamalar > Türkçe Klavyem > İzinler'i kontrol edin
+2. Cihazı yeniden başlatın
+3. Klavyeyi devre dışı bırakıp tekrar etkinleştirin
+
+#### Karakterler Düzgün Gösterilmiyorsa
+1. Cihazınızın Türkçe dil desteği olduğundan emin olun
+2. Sistem yazı tipi ayarlarını kontrol edin
+
+#### Mod Değişikliği Çalışmıyorsa
+1. Uygulamayı tamamen kapatıp tekrar açın
+2. APK'yı yeniden derleyip yükleyin
 
 ## 📝 Geliştirme Notları
 
