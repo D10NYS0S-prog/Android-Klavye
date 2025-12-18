@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Keyboard Attributes -->
+    <attr name="keyboardStyle" format="reference" />
+    <attr name="keyStyle" format="reference" />
+    
+    <!-- Key Appearance -->
+    <attr name="keyTextSize" format="dimension" />
+    <attr name="keyTextColor" format="color" />
+    <attr name="keyHintTextColor" format="color" />
+    <attr name="keyBackground" format="reference|color" />
+    <attr name="keyPressedBackground" format="reference|color" />
+    
+    <!-- Key Spacing -->
+    <attr name="keyMargin" format="dimension" />
+    <attr name="keyPadding" format="dimension" />
+    <attr name="keyCornerRadius" format="dimension" />
+    
+    <!-- Keyboard Background -->
+    <attr name="keyboardBackground" format="reference|color" />
+    <attr name="keyboardPadding" format="dimension" />
+    
+    <!-- Special Keys -->
+    <attr name="functionalKeyTextColor" format="color" />
+    <attr name="functionalKeyBackground" format="reference|color" />
+    
+    <!-- Preview -->
+    <attr name="keyPreviewBackground" format="reference|color" />
+    <attr name="keyPreviewTextSize" format="dimension" />
+    <attr name="keyPreviewTextColor" format="color" />
+    
+    <!-- Shadow -->
+    <attr name="keyShadowColor" format="color" />
+    <attr name="keyShadowRadius" format="dimension" />
+</resources>

@@ -3,8 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:background="#ECECEC"
-    android:padding="4dp">
+    style="@style/KeyboardBase">
 
     <!-- Mod Değiştirme Satırı -->
     <LinearLayout
@@ -19,7 +18,8 @@
             android:layout_width="match_parent"
             android:layout_height="45dp"
             android:text="T9/T12"
-            android:textSize="12sp" />
+            android:textSize="12sp"
+            style="@style/KeyFunctional" />
     </LinearLayout>
 
     <!-- 1. Satır: qw, er, ty, uı, op -->
@@ -33,46 +33,42 @@
         <Button
             android:id="@+id/key_qw"
             android:layout_width="0dp"
-            android:layout_height="60dp"
+            android:layout_height="@dimen/key_height"
             android:layout_weight="1"
-            android:layout_marginEnd="4dp"
             android:text="qw"
-            android:textAllCaps="false" />
+            style="@style/KeyBase" />
 
         <Button
             android:id="@+id/key_er"
             android:layout_width="0dp"
-            android:layout_height="60dp"
+            android:layout_height="@dimen/key_height"
             android:layout_weight="1"
-            android:layout_marginEnd="4dp"
             android:text="er"
-            android:textAllCaps="false" />
+            style="@style/KeyBase" />
 
         <Button
             android:id="@+id/key_ty"
             android:layout_width="0dp"
-            android:layout_height="60dp"
+            android:layout_height="@dimen/key_height"
             android:layout_weight="1"
-            android:layout_marginEnd="4dp"
             android:text="ty"
-            android:textAllCaps="false" />
+            style="@style/KeyBase" />
 
         <Button
             android:id="@+id/key_ui"
             android:layout_width="0dp"
-            android:layout_height="60dp"
+            android:layout_height="@dimen/key_height"
             android:layout_weight="1"
-            android:layout_marginEnd="4dp"
             android:text="uı"
-            android:textAllCaps="false" />
+            style="@style/KeyBase" />
 
         <Button
             android:id="@+id/key_op"
             android:layout_width="0dp"
-            android:layout_height="60dp"
+            android:layout_height="@dimen/key_height"
             android:layout_weight="1"
             android:text="op"
-            android:textAllCaps="false" />
+            style="@style/KeyBase" />
     </LinearLayout>
 
     <!-- 2. Satır: as, df, gh, jk, l- -->
@@ -86,46 +82,42 @@
         <Button
             android:id="@+id/key_as"
             android:layout_width="0dp"
-            android:layout_height="60dp"
+            android:layout_height="@dimen/key_height"
             android:layout_weight="1"
-            android:layout_marginEnd="4dp"
             android:text="as"
-            android:textAllCaps="false" />
+            style="@style/KeyBase" />
 
         <Button
             android:id="@+id/key_df"
             android:layout_width="0dp"
-            android:layout_height="60dp"
+            android:layout_height="@dimen/key_height"
             android:layout_weight="1"
-            android:layout_marginEnd="4dp"
             android:text="df"
-            android:textAllCaps="false" />
+            style="@style/KeyBase" />
 
         <Button
             android:id="@+id/key_gh"
             android:layout_width="0dp"
-            android:layout_height="60dp"
+            android:layout_height="@dimen/key_height"
             android:layout_weight="1"
-            android:layout_marginEnd="4dp"
             android:text="gğ"
-            android:textAllCaps="false" />
+            style="@style/KeyBase" />
 
         <Button
             android:id="@+id/key_jk"
             android:layout_width="0dp"
-            android:layout_height="60dp"
+            android:layout_height="@dimen/key_height"
             android:layout_weight="1"
-            android:layout_marginEnd="4dp"
             android:text="jk"
-            android:textAllCaps="false" />
+            style="@style/KeyBase" />
 
         <Button
             android:id="@+id/key_l"
             android:layout_width="0dp"
-            android:layout_height="60dp"
+            android:layout_height="@dimen/key_height"
             android:layout_weight="1"
             android:text="l-"
-            android:textAllCaps="false" />
+            style="@style/KeyBase" />
     </LinearLayout>
 
     <!-- 3. Satır: shift, zx, cv, bn, m', backspace -->
@@ -139,55 +131,52 @@
         <Button
             android:id="@+id/key_shift"
             android:layout_width="0dp"
-            android:layout_height="60dp"
-            android:layout_weight="1"
-            android:layout_marginEnd="4dp"
+            android:layout_height="@dimen/key_height"
+            android:layout_weight="1.2"
             android:text="⇧"
-            android:textSize="18sp" />
+            android:textSize="20sp"
+            style="@style/KeyFunctional" />
 
         <Button
             android:id="@+id/key_zx"
             android:layout_width="0dp"
-            android:layout_height="60dp"
+            android:layout_height="@dimen/key_height"
             android:layout_weight="1"
-            android:layout_marginEnd="4dp"
             android:text="zx"
-            android:textAllCaps="false" />
+            style="@style/KeyBase" />
 
         <Button
             android:id="@+id/key_cv"
             android:layout_width="0dp"
-            android:layout_height="60dp"
+            android:layout_height="@dimen/key_height"
             android:layout_weight="1"
-            android:layout_marginEnd="4dp"
             android:text="cç"
-            android:textAllCaps="false" />
+            style="@style/KeyBase" />
 
         <Button
             android:id="@+id/key_bn"
             android:layout_width="0dp"
-            android:layout_height="60dp"
+            android:layout_height="@dimen/key_height"
             android:layout_weight="1"
-            android:layout_marginEnd="4dp"
             android:text="bn"
-            android:textAllCaps="false" />
+            style="@style/KeyBase" />
 
         <Button
             android:id="@+id/key_m"
             android:layout_width="0dp"
-            android:layout_height="60dp"
+            android:layout_height="@dimen/key_height"
             android:layout_weight="1"
-            android:layout_marginEnd="4dp"
             android:text="m'"
-            android:textAllCaps="false" />
+            style="@style/KeyBase" />
 
         <Button
             android:id="@+id/key_backspace"
             android:layout_width="0dp"
-            android:layout_height="60dp"
-            android:layout_weight="1"
+            android:layout_height="@dimen/key_height"
+            android:layout_weight="1.2"
             android:text="⌫"
-            android:textSize="18sp" />
+            android:textSize="20sp"
+            style="@style/KeyFunctional" />
     </LinearLayout>
 
     <!-- 4. Satır: 12#, comma, space, dot, enter -->
@@ -201,42 +190,44 @@
             android:id="@+id/key_symbols"
             android:layout_width="0dp"
             android:layout_height="50dp"
-            android:layout_weight="1"
-            android:layout_marginEnd="4dp"
+            android:layout_weight="1.2"
             android:text="12#"
-            android:textSize="12sp" />
+            android:textSize="14sp"
+            style="@style/KeyFunctional" />
 
         <Button
             android:id="@+id/key_comma"
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_weight="1"
-            android:layout_marginEnd="4dp"
-            android:text="," />
+            android:text=","
+            android:textSize="22sp"
+            style="@style/KeyBase" />
 
         <Button
             android:id="@+id/key_space"
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_weight="3"
-            android:layout_marginEnd="4dp"
             android:text="Boşluk"
-            android:textSize="12sp" />
+            style="@style/KeySpace" />
 
         <Button
             android:id="@+id/key_dot"
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_weight="1"
-            android:layout_marginEnd="4dp"
-            android:text="." />
+            android:text="."
+            android:textSize="22sp"
+            style="@style/KeyBase" />
 
         <Button
             android:id="@+id/key_enter"
             android:layout_width="0dp"
             android:layout_height="50dp"
-            android:layout_weight="1"
+            android:layout_weight="1.2"
             android:text="↵"
-            android:textSize="18sp" />
+            android:textSize="20sp"
+            style="@style/KeyFunctional" />
     </LinearLayout>
 </LinearLayout>
