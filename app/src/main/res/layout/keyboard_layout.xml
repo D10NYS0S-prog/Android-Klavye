@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="#ECECEC"
+    android:padding="4dp">
+
+    <!-- Mod Değiştirme ve Silme Satırı -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginBottom="4dp">
+
+        <Button
+            android:id="@+id/mode_switch"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_weight="2"
+            android:text="T9/T12"
+            android:textSize="12sp" />
+
+        <Button
+            android:id="@+id/key_backspace"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            android:text="⌫"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+    <!-- 1. Satır: 1, 2, 3 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginBottom="4dp">
+
+        <Button
+            android:id="@+id/key_1"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="4dp"
+            android:text="1\n.,?" />
+
+        <Button
+            android:id="@+id/key_2"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="4dp"
+            android:text="2\nABCÇ" />
+
+        <Button
+            android:id="@+id/key_3"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_weight="1"
+            android:text="3\nDEF" />
+    </LinearLayout>
+
+    <!-- 2. Satır: 4, 5, 6 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginBottom="4dp">
+
+        <Button
+            android:id="@+id/key_4"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="4dp"
+            android:text="4\nGĞHI" />
+
+        <Button
+            android:id="@+id/key_5"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="4dp"
+            android:text="5\nJKL" />
+
+        <Button
+            android:id="@+id/key_6"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_weight="1"
+            android:text="6\nMNOÖ" />
+    </LinearLayout>
+
+    <!-- 3. Satır: 7, 8, 9 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginBottom="4dp">
+
+        <Button
+            android:id="@+id/key_7"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="4dp"
+            android:text="7\nPQRSŞ" />
+
+        <Button
+            android:id="@+id/key_8"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="4dp"
+            android:text="8\nTUVÜ" />
+
+        <Button
+            android:id="@+id/key_9"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_weight="1"
+            android:text="9\nWXYZ" />
+    </LinearLayout>
+
+    <!-- 4. Satır: *, 0, # -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginBottom="4dp">
+
+        <Button
+            android:id="@+id/key_star"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="4dp"
+            android:text="*\n+" />
+
+        <Button
+            android:id="@+id/key_0"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="4dp"
+            android:text="0\nBoşluk" />
+
+        <Button
+            android:id="@+id/key_hash"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_weight="1"
+            android:text="#" />
+    </LinearLayout>
+
+    <!-- 5. Satır: Enter -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <Button
+            android:id="@+id/key_enter"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:text="Enter"
+            android:textSize="16sp" />
+    </LinearLayout>
+</LinearLayout>

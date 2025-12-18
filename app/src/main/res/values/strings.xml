@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Türkçe Klavyem</string>
+    <string name="keyboard_label">Türkçe T9/T12 Klavye</string>
+    <string name="mode_t9">T9 Modu</string>
+    <string name="mode_t12">T12 Modu</string>
+</resources>
