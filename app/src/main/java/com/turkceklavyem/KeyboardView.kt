@@ -3,12 +3,16 @@ package com.turkceklavyem
 /**
  * T9 Tuş Haritası - Her sayı tuşuna atanan harfler
  * Türkçe özel karakterler (Ç, Ğ, İ, Ö, Ş, Ü) dahil
+ * 
+ * Not: Türkçe'de iki farklı I harfi vardır:
+ * - İ (noktalı büyük i) ve i (noktalı küçük i)
+ * - I (noktasız büyük ı) ve ı (noktasız küçük ı)
  */
 val T9_MAPPING: Map<Int, String> = mapOf(
     1 to ".,?!1",
     2 to "ABCÇ2",
     3 to "DEF3",
-    4 to "GĞHİ4",
+    4 to "GĞHIİ4",
     5 to "JKL5",
     6 to "MNOÖ6",
     7 to "PQRSŞ7",
@@ -20,12 +24,13 @@ val T9_MAPPING: Map<Int, String> = mapOf(
 /**
  * T12 Tuş Haritası - Genişletilmiş klavye düzeni
  * T9'a ek olarak daha fazla harf ve sembol içerir
+ * Hem büyük hem küçük harfler dahil
  */
 val T12_MAPPING: Map<Int, String> = mapOf(
     1 to ".,?!;:1",
-    2 to "ABCÇabc2",
+    2 to "ABCÇabcç2",
     3 to "DEFdef3",
-    4 to "GĞHİgğhı4",
+    4 to "GĞHIİgğhıi4",
     5 to "JKLjkl5",
     6 to "MNOÖmnoö6",
     7 to "PQRSŞpqrsş7",
