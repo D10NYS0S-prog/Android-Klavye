@@ -89,7 +89,7 @@ class T9KeyboardService : InputMethodService() {
     
     private fun handleT12Input(key: Int) {
         // T12 modunda doğrudan harf girişi
-        val letters = T9_MAPPING[key] ?: ""
+        val letters = T12_MAPPING[key] ?: ""
         if (letters.isNotEmpty()) {
             // İlk harfi ekle (çoklu basım için mantık eklenecek)
             val char = letters[0]

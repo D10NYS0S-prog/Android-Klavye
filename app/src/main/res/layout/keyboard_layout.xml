@@ -45,7 +45,7 @@
             android:layout_height="60dp"
             android:layout_weight="1"
             android:layout_marginEnd="4dp"
-            android:text="1\n.,?" />
+            android:text="1\n.,?!" />
 
         <Button
             android:id="@+id/key_2"
