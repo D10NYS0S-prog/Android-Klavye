@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Material Light Theme Colors -->
+    <color name="keyboard_background_light">#ECEFF1</color>
+    <color name="key_background_light">#FFFFFF</color>
+    <color name="key_pressed_light">#E0E0E0</color>
+    <color name="key_text_light">#37474F</color>
+    <color name="key_hint_text_light">#78909C</color>
+    <color name="functional_key_light">#CFD8DC</color>
+    
+    <!-- Material Dark Theme Colors -->
+    <color name="keyboard_background_dark">#263238</color>
+    <color name="key_background_dark">#37474F</color>
+    <color name="key_pressed_dark">#455A64</color>
+    <color name="key_text_dark">#ECEFF1</color>
+    <color name="key_hint_text_dark">#90A4AE</color>
+    <color name="functional_key_dark">#455A64</color>
+    
+    <!-- Accent Colors -->
+    <color name="primary_color">#3F51B5</color>
+    <color name="primary_dark_color">#303F9F</color>
+    <color name="accent_color">#FF4081</color>
+    
+    <!-- Common Colors -->
+    <color name="shadow_color">#40000000</color>
+    <color name="preview_background">#F5F5F5</color>
+    <color name="preview_text">#212121</color>
+</resources>
