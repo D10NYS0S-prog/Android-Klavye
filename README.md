@@ -56,7 +56,7 @@ TurkceKlavyem/
 1: . , ? ! 1
 2: A B C Ç 2
 3: D E F 3
-4: G Ğ H İ 4
+4: G Ğ H I İ 4
 5: J K L 5
 6: M N O Ö 6
 7: P Q R S Ş 7
@@ -65,8 +65,16 @@ TurkceKlavyem/
 0: Boşluk 0
 ```
 
-### T12 Tuş Haritası
-T9'a ek olarak hem büyük hem küçük harfleri ve daha fazla sembolü içerir.
+### T12 Tuş Düzeni
+T12 modu QWERTY tarzı kompakt bir klavye düzenidir. Her tuşta iki harf bulunur:
+
+```
+Satır 1: [qw] [er] [ty] [uı] [op]
+Satır 2: [as] [df] [gğ] [jk] [lü]
+Satır 3: [zx] [cç] [bn] [mö]
+```
+
+Her tuşa basıldığında ilk harf yazılır, çoklu basışla diğer harfe geçilir.
 
 ## 🚀 Kurulum ve Kullanım
 

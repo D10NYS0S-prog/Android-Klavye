@@ -22,36 +22,54 @@ val T9_MAPPING: Map<Int, String> = mapOf(
 )
 
 /**
- * T12 Tuş Haritası - Genişletilmiş klavye düzeni
- * T9'a ek olarak daha fazla harf ve sembol içerir
- * Hem büyük hem küçük harfler dahil
+ * T12 Tuş Düzeni - QWERTY tarzı kompakt klavye düzeni
+ * Her tuşta iki harf bulunur, çoklu basış ile karakterler arasında geçiş yapılır
+ * 
+ * Düzen:
+ * Satır 1: [qw] [er] [ty] [uı] [op]
+ * Satır 2: [as] [df] [gğ] [jk] [lü]
+ * Satır 3: [zx] [cç] [bn] [mö]
  */
-val T12_MAPPING: Map<Int, String> = mapOf(
-    1 to ".,?!;:1",
-    2 to "ABCÇabcç2",
-    3 to "DEFdef3",
-    4 to "GĞHIİgğhıi4",
-    5 to "JKLjkl5",
-    6 to "MNOÖmnoö6",
-    7 to "PQRSŞpqrsş7",
-    8 to "TUVÜtuvü8",
-    9 to "WXYZwxyz9",
-    0 to " _-0"
+val T12_LAYOUT = mapOf(
+    "qw" to "qw",
+    "er" to "er",
+    "ty" to "ty",
+    "ui" to "uı",
+    "op" to "op",
+    "as" to "as",
+    "df" to "df",
+    "gh" to "gğ",
+    "jk" to "jk",
+    "lu" to "lü",
+    "zx" to "zx",
+    "cv" to "cç",
+    "bn" to "bn",
+    "mo" to "mö"
 )
 
 /**
- * Tuş basım sayısına göre karakter döndürür
+ * Tuş basım sayısına göre karakter döndürür (T9 için)
  * @param key Basılan tuş (1-9)
  * @param pressCount Kaç kez basıldığı
- * @param isT9Mode T9 modu mu T12 modu mu
  * @return Karşılık gelen karakter
  */
-fun getCharacterForKeyPress(key: Int, pressCount: Int, isT9Mode: Boolean): Char? {
-    val mapping = if (isT9Mode) T9_MAPPING else T12_MAPPING
-    val chars = mapping[key] ?: return null
+fun getCharacterForKeyPress(key: Int, pressCount: Int): Char? {
+    val chars = T9_MAPPING[key] ?: return null
     
     if (chars.isEmpty()) return null
     
+    val index = (pressCount - 1) % chars.length
+    return chars[index]
+}
+
+/**
+ * T12 tuşu için çoklu basış ile karakter seçimi
+ * @param chars Tuştaki karakterler (örn: "qw")
+ * @param pressCount Kaç kez basıldığı
+ * @return Seçilen karakter
+ */
+fun getT12Character(chars: String, pressCount: Int): Char? {
+    if (chars.isEmpty()) return null
     val index = (pressCount - 1) % chars.length
     return chars[index]
 }

@@ -12,11 +12,14 @@ class T9KeyboardService : InputMethodService() {
     private var isT9Mode = true  // true = T9 modu, false = T12 modu
     private var currentInput = StringBuilder()
     private val wordDatabase = WordDatabase()
+    private var currentKeyboardView: View? = null
     
     override fun onCreateInputView(): View {
-        // Klavye görünümünü bağla
+        // Klavye görünümünü bağla - mod seçimine göre
         val inflater = LayoutInflater.from(this)
-        val keyboardView = inflater.inflate(R.layout.keyboard_layout, null)
+        val layoutId = if (isT9Mode) R.layout.keyboard_layout else R.layout.keyboard_layout_t12
+        val keyboardView = inflater.inflate(layoutId, null)
+        currentKeyboardView = keyboardView
         
         // Tuş dinleyicilerini ayarla
         setupKeyListeners(keyboardView)
@@ -25,6 +28,27 @@ class T9KeyboardService : InputMethodService() {
     }
     
     private fun setupKeyListeners(view: View) {
+        if (isT9Mode) {
+            setupT9KeyListeners(view)
+        } else {
+            setupT12KeyListeners(view)
+        }
+        
+        // Ortak tuşlar
+        view.findViewById<Button>(R.id.key_backspace)?.setOnClickListener {
+            onBackspacePressed()
+        }
+        
+        view.findViewById<Button>(R.id.key_enter)?.setOnClickListener {
+            onEnterPressed()
+        }
+        
+        view.findViewById<Button>(R.id.mode_switch)?.setOnClickListener {
+            toggleMode()
+        }
+    }
+    
+    private fun setupT9KeyListeners(view: View) {
         // Sayı tuşları (1-9)
         val keyIds = arrayOf(
             R.id.key_1, R.id.key_2, R.id.key_3,
@@ -34,7 +58,7 @@ class T9KeyboardService : InputMethodService() {
         
         keyIds.forEachIndexed { index, keyId ->
             view.findViewById<Button>(keyId)?.setOnClickListener {
-                onKeyPressed(index + 1)
+                onT9KeyPressed(index + 1)
             }
         }
         
@@ -50,29 +74,43 @@ class T9KeyboardService : InputMethodService() {
         view.findViewById<Button>(R.id.key_hash)?.setOnClickListener {
             onHashPressed()
         }
+    }
+    
+    private fun setupT12KeyListeners(view: View) {
+        // T12 tuşları - her tuş iki harf içerir
+        val keyMap = mapOf(
+            R.id.key_qw to "qw",
+            R.id.key_er to "er",
+            R.id.key_ty to "ty",
+            R.id.key_ui to "uı",
+            R.id.key_op to "op",
+            R.id.key_as to "as",
+            R.id.key_df to "df",
+            R.id.key_gh to "gğ",
+            R.id.key_jk to "jk",
+            R.id.key_lu to "lü",
+            R.id.key_zx to "zx",
+            R.id.key_cv to "cç",
+            R.id.key_bn to "bn",
+            R.id.key_mo to "mö"
+        )
         
-        view.findViewById<Button>(R.id.key_backspace)?.setOnClickListener {
-            onBackspacePressed()
+        keyMap.forEach { (keyId, chars) ->
+            view.findViewById<Button>(keyId)?.setOnClickListener {
+                onT12KeyPressed(chars)
+            }
         }
         
-        view.findViewById<Button>(R.id.key_enter)?.setOnClickListener {
-            onEnterPressed()
+        view.findViewById<Button>(R.id.key_space)?.setOnClickListener {
+            onSpacePressed()
         }
         
-        view.findViewById<Button>(R.id.mode_switch)?.setOnClickListener {
-            toggleMode()
+        view.findViewById<Button>(R.id.key_dot)?.setOnClickListener {
+            currentInputConnection?.commitText(".", 1)
         }
     }
     
-    private fun onKeyPressed(key: Int) {
-        if (isT9Mode) {
-            handleT9Input(key)
-        } else {
-            handleT12Input(key)
-        }
-    }
-    
-    private fun handleT9Input(key: Int) {
+    private fun onT9KeyPressed(key: Int) {
         // T9 modunda tuş basımını işle
         currentInput.append(key)
         
@@ -87,12 +125,11 @@ class T9KeyboardService : InputMethodService() {
         }
     }
     
-    private fun handleT12Input(key: Int) {
+    private fun onT12KeyPressed(chars: String) {
         // T12 modunda doğrudan harf girişi
-        val letters = T12_MAPPING[key] ?: ""
-        if (letters.isNotEmpty()) {
-            // İlk harfi ekle (çoklu basım için mantık eklenecek)
-            val char = letters[0]
+        // Şimdilik ilk harfi gir, gelecekte çoklu basım desteği eklenecek
+        if (chars.isNotEmpty()) {
+            val char = chars[0]
             currentInputConnection?.commitText(char.toString(), 1)
         }
     }
@@ -126,7 +163,8 @@ class T9KeyboardService : InputMethodService() {
     
     private fun toggleMode() {
         isT9Mode = !isT9Mode
-        // TODO: Mod değişikliğini kullanıcıya göster
+        // Klavye görünümünü yeniden oluştur
+        setInputView(onCreateInputView())
     }
     
     override fun onStartInputView(info: EditorInfo?, restarting: Boolean) {
