@@ -5,19 +5,58 @@ package com.turkceklavyem
  * 
  * Bu sınıf T9/T12 sisteminde kelime tahminleri için kullanılır.
  * Basit bir in-memory sözlük ile başlayıp, ileride SQLite/Room entegrasyonu yapılabilir.
+ * Singleton pattern kullanılarak tüm uygulamada tek bir instance kullanılır.
  */
-class WordDatabase {
+class WordDatabase private constructor() {
     
     // Temel Türkçe kelime sözlüğü (demo amaçlı)
     private val turkishWords = mutableMapOf<String, MutableList<String>>().apply {
-        // T9 tuş dizileri için kelimeler
+        // T9 tuş dizileri için kelimeler - genişletilmiş
         // "6375222" -> "merhaba"
         put("6375222", mutableListOf("merhaba"))
+        put("6372", mutableListOf("mera", "merk"))
+        put("63726", mutableListOf("merak", "meran", "meram"))
+        put("637746", mutableListOf("mersin"))
+        
         put("72526", mutableListOf("salam", "salak"))
         put("6376", mutableListOf("merk", "nerk"))
         put("626", mutableListOf("mam", "nan"))
         put("4764", mutableListOf("işık"))
         put("5366", mutableListOf("küçük", "küçüm"))
+        
+        // Daha fazla yaygın Türkçe kelime
+        put("9374", mutableListOf("yazı"))
+        put("93746", mutableListOf("yazık", "yazım"))
+        put("46374", mutableListOf("güzel"))
+        put("26786", mutableListOf("çorum"))
+        put("26746", mutableListOf("çoğun"))
+        put("29", mutableListOf("ay"))
+        put("292", mutableListOf("aya"))
+        put("3838", mutableListOf("düdü", "fütü"))
+        put("3936", mutableListOf("evim"))
+        put("7374", mutableListOf("sesi"))
+        put("837", mutableListOf("üçü", "tes"))
+        put("427", mutableListOf("göç", "gör"))
+        put("32", mutableListOf("da", "de", "fa"))
+        put("49", mutableListOf("ıy"))
+        put("46", mutableListOf("ğm", "ğn", "ğo", "gm", "gn", "go", "ho", "ım", "in", "io"))
+        
+        // Kısa kelimeler
+        put("93", mutableListOf("ya"))
+        put("83", mutableListOf("te", "ve"))
+        put("36", mutableListOf("en", "em", "fn"))
+        put("84", mutableListOf("tg", "tı", "ti", "uğ", "ui", "ug"))
+        put("68", mutableListOf("mu", "nu", "ot"))
+        
+        // Yaygın kelimeler
+        put("4674", mutableListOf("işık", "gösı"))
+        put("6876", mutableListOf("okul", "olum"))
+        put("9378", mutableListOf("yurt"))
+        put("4968", mutableListOf("ilgi", "ilmu"))
+        put("9286", mutableListOf("yağı", "yaum"))
+        put("53384", mutableListOf("keşif", "leduf"))
+        put("43746", mutableListOf("işlem", "gesin"))
+        put("6677", mutableListOf("motor"))
     }
     
     // T12 için kelime eşlemeleri (tuş kombinasyonlarına göre)
@@ -37,6 +76,17 @@ class WordDatabase {
     
     init {
         initialize()
+    }
+    
+    companion object {
+        @Volatile
+        private var INSTANCE: WordDatabase? = null
+        
+        fun getInstance(): WordDatabase {
+            return INSTANCE ?: synchronized(this) {
+                INSTANCE ?: WordDatabase().also { INSTANCE = it }
+            }
+        }
     }
     
     /**
@@ -108,6 +158,24 @@ class WordDatabase {
     }
     
     /**
+     * Kelimeyi doğrudan veritabanına ekler (dosya içe aktarma için)
+     * @param word Eklenecek kelime
+     */
+    fun addWordToDatabase(word: String) {
+        if (word.isEmpty() || word.length < 2) return
+        
+        val keySeq = wordToT9Sequence(word)
+        if (keySeq.isNotEmpty()) {
+            val words = turkishWords.getOrPut(keySeq) { mutableListOf() }
+            if (!words.contains(word)) {
+                words.add(word)
+                // Yeni kelimeye başlangıç sıklığı ver
+                wordFrequency[word] = 1
+            }
+        }
+    }
+    
+    /**
      * PDF veya metin dosyasından kelimeleri öğrenir (gelecekte implement edilecek)
      * @param text Metin içeriği
      */
@@ -156,6 +224,15 @@ class WordDatabase {
         wordFrequency["merhaba"] = 100
         wordFrequency["salam"] = 50
         wordFrequency["salak"] = 20
+        wordFrequency["günaydın"] = 90
+        wordFrequency["iyi"] = 95
+        wordFrequency["teşekkür"] = 85
+        wordFrequency["evet"] = 100
+        wordFrequency["hayır"] = 90
+        wordFrequency["tamam"] = 95
+        
+        // Yaygın kelimeleri otomatik yükle
+        addCommonWords()
         
         // Gelecekte: SQLite/Room veritabanından yükleme
         // veya assets klasöründen Türkçe sözlük yükleme
@@ -167,7 +244,15 @@ class WordDatabase {
     fun addCommonWords() {
         val commonWords = listOf(
             "merhaba", "günaydın", "iyi", "teşekkür", "ederim",
-            "lütfen", "evet", "hayır", "tamam", "hoşça", "kal"
+            "lütfen", "evet", "hayır", "tamam", "hoşça", "kal",
+            "nasıl", "naber", "selam", "hoşgeldin", "görüşürüz",
+            "yarın", "bugün", "dün", "akşam", "sabah", "öğle",
+            "para", "araba", "ev", "iş", "okul", "öğrenci",
+            "öğretmen", "anne", "baba", "kardeş", "arkadaş",
+            "sevgili", "aşk", "mutlu", "üzgün", "kötü", "güzel",
+            "büyük", "küçük", "yeni", "eski", "hızlı", "yavaş",
+            "su", "yemek", "içmek", "gelmek", "gitmek", "almak",
+            "vermek", "yapmak", "etmek", "olmak", "bilmek", "görmek"
         )
         
         for (word in commonWords) {

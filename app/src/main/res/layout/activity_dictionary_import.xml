@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:gravity="center"
+    android:background="#F5F5F5">
+
+    <!-- Başlık -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="📚"
+        android:textSize="64sp"
+        android:layout_marginBottom="16dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sözlük İçe Aktar"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="#333333"
+        android:layout_marginBottom="8dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="TXT veya PDF dosyasından kelimeleri klavye sözlüğüne ekleyin"
+        android:textSize="14sp"
+        android:textColor="#666666"
+        android:gravity="center"
+        android:layout_marginBottom="32dp" />
+
+    <!-- Durum Kartı -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:elevation="4dp">
+        
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+            
+            <TextView
+                android:id="@+id/tv_import_status"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Hazır"
+                android:textSize="16sp"
+                android:textColor="#333333"
+                android:gravity="center"
+                android:layout_marginBottom="16dp" />
+            
+            <ProgressBar
+                android:id="@+id/progress_import"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                style="@android:style/Widget.ProgressBar.Horizontal"
+                android:indeterminate="true" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- TXT İçe Aktarma Butonu -->
+    <Button
+        android:id="@+id/btn_import_txt"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="📄 TXT Dosyası Seç"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:backgroundTint="#4CAF50"
+        android:textColor="#FFFFFF"
+        android:layout_marginBottom="12dp" />
+
+    <!-- PDF İçe Aktarma Butonu -->
+    <Button
+        android:id="@+id/btn_import_pdf"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="📑 PDF Dosyası Seç"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:backgroundTint="#2196F3"
+        android:textColor="#FFFFFF"
+        android:layout_marginBottom="24dp" />
+
+    <!-- Bilgi -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="💡 İpucu:\n• TXT dosyaları tam destek\n• PDF desteği sınırlı (TXT tercih edilir)\n• Sadece Türkçe karakterler korunur\n• En az 2 harfli kelimeler eklenir\n• Tekrar eden kelimeler otomatik elenir"
+        android:textSize="12sp"
+        android:textColor="#999999"
+        android:gravity="start"
+        android:lineSpacingExtra="4dp" />
+
+</LinearLayout>

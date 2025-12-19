@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="#F5F5F5"
+    android:padding="12dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="⚙ Klavye Ayarları"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="#333333"
+        android:gravity="center"
+        android:layout_marginBottom="12dp" />
+
+    <!-- T9/T12 Geçişi -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="8dp">
+        
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Klavye Modu"
+            android:textSize="14sp"
+            android:textColor="#666666" />
+        
+        <Button
+            android:id="@+id/btn_mode_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:text="T9 ⇄ T12"
+            android:textSize="12sp"
+            style="@style/Widget.AppCompat.Button.Borderless" />
+    </LinearLayout>
+
+    <!-- Boyut Ayarı -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="8dp">
+        
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Klavye Boyutu"
+            android:textSize="14sp"
+            android:textColor="#666666" />
+        
+        <Button
+            android:id="@+id/btn_height_adjust"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:text="Ayarla"
+            android:textSize="12sp"
+            style="@style/Widget.AppCompat.Button.Borderless" />
+    </LinearLayout>
+
+    <!-- Titreşim/Ses -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="8dp">
+        
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Titreşim/Ses"
+            android:textSize="14sp"
+            android:textColor="#666666" />
+        
+        <Button
+            android:id="@+id/btn_feedback_settings"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:text="Ayarlar"
+            android:textSize="12sp"
+            style="@style/Widget.AppCompat.Button.Borderless" />
+    </LinearLayout>
+
+    <!-- Tema -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="8dp">
+        
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Tema"
+            android:textSize="14sp"
+            android:textColor="#666666" />
+        
+        <Button
+            android:id="@+id/btn_theme_settings"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:text="Değiştir"
+            android:textSize="12sp"
+            style="@style/Widget.AppCompat.Button.Borderless" />
+    </LinearLayout>
+
+    <!-- Kapat Butonu -->
+    <Button
+        android:id="@+id/btn_close_settings"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:text="✖ Kapat"
+        android:textSize="14sp"
+        android:backgroundTint="#666666"
+        android:textColor="#FFFFFF"
+        android:layout_marginTop="8dp" />
+
+</LinearLayout>

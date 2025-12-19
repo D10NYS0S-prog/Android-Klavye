@@ -55,15 +55,15 @@ val T12_KEY_MAP = mapOf(
     "key_qw" to "qwQW",
     "key_er" to "erER",
     "key_ty" to "tyTY",
-    "key_ui" to "uıUİ",
+    "key_ui" to "uıiUİI",  // u, ı, i karakterleri
     "key_op" to "opöOPÖ",
     "key_as" to "asAS",
     "key_df" to "dfDF",
-    "key_gh" to "gğhGĞH",
+    "key_gh" to "gğhGĞH",  // g, ğ, h karakterleri
     "key_jk" to "jkJK",
     "key_l" to "l-L_",
     "key_zx" to "zxZX",
-    "key_cv" to "cçvCÇV",
+    "key_cv" to "cçvCÇV",  // c, ç, v karakterleri
     "key_bn" to "bnBN",
     "key_m" to "m'öM'Ö"
 )

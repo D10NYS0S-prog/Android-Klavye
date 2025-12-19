@@ -5,24 +5,7 @@
     android:orientation="vertical"
     style="@style/KeyboardBase">
 
-    <!-- Mod Değiştirme Satırı -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:layout_marginBottom="4dp">
-
-        <Button
-            android:id="@+id/mode_switch"
-            android:layout_width="match_parent"
-            android:layout_height="45dp"
-            android:text="T9/T12"
-            android:textSize="12sp"
-            style="@style/KeyFunctional" />
-    </LinearLayout>
-
-    <!-- 1. Satır: qw, er, ty, uı, op -->
+    <!-- Satır 1: qw, er, ty, uı, op -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -59,7 +42,7 @@
             android:layout_width="0dp"
             android:layout_height="@dimen/key_height"
             android:layout_weight="1"
-            android:text="uı"
+            android:text="uıi"
             style="@style/KeyBase" />
 
         <Button
@@ -71,7 +54,7 @@
             style="@style/KeyBase" />
     </LinearLayout>
 
-    <!-- 2. Satır: as, df, gh, jk, l- -->
+    <!-- Satır 2: as, df, gğh, jk, l- -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -100,7 +83,7 @@
             android:layout_width="0dp"
             android:layout_height="@dimen/key_height"
             android:layout_weight="1"
-            android:text="gğ"
+            android:text="gğh"
             style="@style/KeyBase" />
 
         <Button
@@ -120,7 +103,7 @@
             style="@style/KeyBase" />
     </LinearLayout>
 
-    <!-- 3. Satır: shift, zx, cv, bn, m', backspace -->
+    <!-- Satır 3: ⇧, zx, cçv, bn, m', ⌫ -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -132,7 +115,7 @@
             android:id="@+id/key_shift"
             android:layout_width="0dp"
             android:layout_height="@dimen/key_height"
-            android:layout_weight="1.2"
+            android:layout_weight="1"
             android:text="⇧"
             android:textSize="20sp"
             style="@style/KeyFunctional" />
@@ -150,7 +133,7 @@
             android:layout_width="0dp"
             android:layout_height="@dimen/key_height"
             android:layout_weight="1"
-            android:text="cç"
+            android:text="cçv"
             style="@style/KeyBase" />
 
         <Button
@@ -173,13 +156,13 @@
             android:id="@+id/key_backspace"
             android:layout_width="0dp"
             android:layout_height="@dimen/key_height"
-            android:layout_weight="1.2"
+            android:layout_weight="1"
             android:text="⌫"
             android:textSize="20sp"
             style="@style/KeyFunctional" />
     </LinearLayout>
 
-    <!-- 4. Satır: 12#, comma, space, dot, enter -->
+    <!-- Satır 4: 12#, ,, boşluk, ., ↵ -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -190,7 +173,7 @@
             android:id="@+id/key_symbols"
             android:layout_width="0dp"
             android:layout_height="50dp"
-            android:layout_weight="1.2"
+            android:layout_weight="1"
             android:text="12#"
             android:textSize="14sp"
             style="@style/KeyFunctional" />
@@ -208,7 +191,7 @@
             android:id="@+id/key_space"
             android:layout_width="0dp"
             android:layout_height="50dp"
-            android:layout_weight="3"
+            android:layout_weight="2"
             android:text="Boşluk"
             style="@style/KeySpace" />
 
@@ -225,7 +208,7 @@
             android:id="@+id/key_enter"
             android:layout_width="0dp"
             android:layout_height="50dp"
-            android:layout_weight="1.2"
+            android:layout_weight="1"
             android:text="↵"
             android:textSize="20sp"
             style="@style/KeyFunctional" />

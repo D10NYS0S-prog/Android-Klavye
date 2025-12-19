@@ -21,6 +21,10 @@
     <color name="primary_dark_color">#303F9F</color>
     <color name="accent_color">#FF4081</color>
     
+    <!-- Suggestion Bar Colors -->
+    <color name="suggestion_primary">#6200EE</color>
+    <color name="suggestion_secondary">#F5F5F5</color>
+    
     <!-- Common Colors -->
     <color name="shadow_color">#40000000</color>
     <color name="preview_background">#F5F5F5</color>
