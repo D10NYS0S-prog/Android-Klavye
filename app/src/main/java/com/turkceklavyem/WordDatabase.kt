@@ -3,7 +3,7 @@ package com.turkceklavyem
 /**
  * WordDatabase - Kelime veritabanı yönetimi ve tahmin sistemi
  * 
- * Bu sınıf T9/T12 sisteminde kelime tahminleri için kullanılır.
+ * Bu sınıf T9/T16 sisteminde kelime tahminleri için kullanılır.
  * Basit bir in-memory sözlük ile başlayıp, ileride SQLite/Room entegrasyonu yapılabilir.
  * Singleton pattern kullanılarak tüm uygulamada tek bir instance kullanılır.
  */
@@ -59,8 +59,8 @@ class WordDatabase private constructor() {
         put("6677", mutableListOf("motor"))
     }
     
-    // T12 için kelime eşlemeleri (tuş kombinasyonlarına göre)
-    private val t12Words = mutableMapOf<String, MutableList<String>>().apply {
+    // T16 için kelime eşlemeleri (tuş kombinasyonlarına göre)
+    private val t16Words = mutableMapOf<String, MutableList<String>>().apply {
         // Örnek: "m-er-gh-as-bn-as" tuş dizisi için
         // Her tuşun ilk harfleri: m,e,g,a,b,a = "megaba" benzeri
         put("meghab", mutableListOf("merhaba"))
@@ -110,21 +110,21 @@ class WordDatabase private constructor() {
     }
     
     /**
-     * T12: Tuş kombinasyonlarından kelime tahmini
+     * T16: Tuş kombinasyonlarından kelime tahmini
      * @param keyPattern Tuş dizisi pattern'i (örn: "meghaba")
      * @return Olası kelime listesi
      */
-    fun predictT12Words(keyPattern: String): List<String> {
+    fun predictT16Words(keyPattern: String): List<String> {
         if (keyPattern.isEmpty()) return emptyList()
         
         val words = mutableListOf<String>()
         
         // Önce tam eşleşme ara
-        t12Words[keyPattern.lowercase()]?.let { words.addAll(it) }
+        t16Words[keyPattern.lowercase()]?.let { words.addAll(it) }
         learnedWords[keyPattern.lowercase()]?.let { words.addAll(it) }
         
         // Kısmi eşleşmeleri de ara
-        for ((pattern, wordList) in t12Words) {
+        for ((pattern, wordList) in t16Words) {
             if (pattern.startsWith(keyPattern.lowercase()) || 
                 keyPattern.lowercase().startsWith(pattern)) {
                 words.addAll(wordList)
@@ -132,6 +132,104 @@ class WordDatabase private constructor() {
         }
         
         return words.distinct().sortedByDescending { wordFrequency[it] ?: 0 }.take(5)
+    }
+    
+    /**
+     * Prefix ile başlayan kelimeleri döndürür (T16 modu için)
+     * @param prefix Kelime ön eki
+     * @return Ön ekle başlayan kelime listesi
+     */
+    fun getWordsByPrefix(prefix: String): List<String> {
+        if (prefix.isEmpty() || prefix.length < 2) return emptyList()
+        
+        val words = mutableSetOf<String>()
+        val lowerPrefix = prefix.lowercase()
+        
+        // Tüm kelimelerden prefix ile başlayanları bul
+        turkishWords.values.flatten().forEach { word ->
+            if (word.lowercase().startsWith(lowerPrefix)) {
+                words.add(word)
+            }
+        }
+        
+        learnedWords.values.flatten().forEach { word ->
+            if (word.lowercase().startsWith(lowerPrefix)) {
+                words.add(word)
+            }
+        }
+        
+        // Sıklığa göre sırala
+        return words.toList().sortedByDescending { wordFrequency[it] ?: 0 }
+    }
+    
+    /**
+     * T16 tuş dizisinden kelime önerileri üretir
+     * @param keySequence T16 tuş isimleri dizisi (örn: ["m", "er", "er", "gh", "as", "bn", "as"])
+     * @return Olası kelime listesi
+     */
+    fun getWordsFromT16KeySequence(keySequence: List<String>): List<String> {
+        if (keySequence.isEmpty()) return emptyList()
+        
+        // T16 tuş eşlemeleri
+        val keyToChars = mapOf(
+            "qw" to "qw",
+            "er" to "er",
+            "ty" to "ty",
+            "ui" to "uı",
+            "op" to "op",
+            "as" to "as",
+            "df" to "df",
+            "gh" to "gh",
+            "jk" to "jk",
+            "l" to "l",
+            "zx" to "zx",
+            "cv" to "cv",
+            "bn" to "bn",
+            "m" to "m"
+        )
+        
+        // Her tuş için olası karakterleri al
+        val possibleCharsPerKey = keySequence.map { key ->
+            val normalizedKey = key.replace("key_", "").lowercase()
+            keyToChars[normalizedKey]?.toList() ?: listOf()
+        }
+        
+        // Olası kombinasyonları oluştur
+        val combinations = generateCombinations(possibleCharsPerKey)
+        
+        // Sözlükte var olan kelimeleri bul
+        val matchedWords = mutableSetOf<String>()
+        val allWords = turkishWords.values.flatten() + learnedWords.values.flatten()
+        
+        for (combo in combinations) {
+            val word = combo.joinToString("")
+            if (allWords.contains(word)) {
+                matchedWords.add(word)
+            }
+        }
+        
+        // Sıklığa göre sırala
+        return matchedWords.toList().sortedByDescending { wordFrequency[it] ?: 0 }
+    }
+    
+    /**
+     * Karakter listelerinden tüm kombinasyonları üretir
+     */
+    private fun generateCombinations(charLists: List<List<Char>>): List<List<Char>> {
+        if (charLists.isEmpty()) return listOf(emptyList())
+        if (charLists.size == 1) return charLists[0].map { listOf(it) }
+        
+        val result = mutableListOf<List<Char>>()
+        val firstChars = charLists[0]
+        val remainingCombos = generateCombinations(charLists.drop(1))
+        
+        for (char in firstChars) {
+            for (combo in remainingCombos) {
+                result.add(listOf(char) + combo)
+            }
+        }
+        
+        return result
     }
     
     /**
@@ -261,6 +359,33 @@ class WordDatabase private constructor() {
             if (!words.contains(word)) {
                 words.add(word)
             }
+        }
+    }
+    
+    /**
+     * Assets klasöründen Türkçe kelime listesini yükler
+     * @param context Android context
+     */
+    fun loadWordsFromAssets(context: android.content.Context) {
+        try {
+            val inputStream = context.assets.open("turkce_kelime_listesi.txt")
+            val words = inputStream.bufferedReader().use { it.readLines() }
+            
+            var loadedCount = 0
+            for (word in words) {
+                val cleanWord = word.trim().lowercase()
+                if (cleanWord.isNotEmpty() && cleanWord.length >= 2) {
+                    // Sadece Türkçe karakterler içeren kelimeleri al
+                    if (cleanWord.matches(Regex("[a-zçğıöşü\\s]+"))) {
+                        addWordToDatabase(cleanWord)
+                        loadedCount++
+                    }
+                }
+            }
+            
+            android.util.Log.d("WordDatabase", "Loaded $loadedCount words from turkce_kelime_listesi.txt")
+        } catch (e: Exception) {
+            android.util.Log.e("WordDatabase", "Error loading word list from assets", e)
         }
     }
     

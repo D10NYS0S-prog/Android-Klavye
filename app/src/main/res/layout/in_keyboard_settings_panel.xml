@@ -35,7 +35,7 @@
             android:id="@+id/btn_mode_switch"
             android:layout_width="wrap_content"
             android:layout_height="36dp"
-            android:text="T9 ⇄ T12"
+            android:text="T9 ⇄ T16 ⇄ Std"
             android:textSize="12sp"
             style="@style/Widget.AppCompat.Button.Borderless" />
     </LinearLayout>

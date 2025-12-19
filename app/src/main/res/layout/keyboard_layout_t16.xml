@@ -5,7 +5,79 @@
     android:orientation="vertical"
     style="@style/KeyboardBase">
 
-    <!-- Satır 1: qw, er, ty, uı, op -->
+    <!-- Satır 1: Kelime Tahminleri + Ayarlar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:background="#E0E0E0"
+        android:layout_marginBottom="4dp">
+
+        <Button
+            android:id="@+id/suggestion_1"
+            android:layout_width="0dp"
+            android:layout_height="36dp"
+            android:layout_weight="1"
+            android:text=""
+            android:textSize="14sp"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:background="@color/suggestion_secondary"
+            android:textColor="@android:color/black"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/suggestion_2"
+            android:layout_width="0dp"
+            android:layout_height="36dp"
+            android:layout_weight="1"
+            android:text=""
+            android:textSize="14sp"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:background="@color/suggestion_secondary"
+            android:textColor="@android:color/black"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/suggestion_3"
+            android:layout_width="0dp"
+            android:layout_height="36dp"
+            android:layout_weight="1"
+            android:text=""
+            android:textSize="14sp"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:background="@color/suggestion_secondary"
+            android:textColor="@android:color/black"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/suggestion_4"
+            android:layout_width="0dp"
+            android:layout_height="36dp"
+            android:layout_weight="1"
+            android:text=""
+            android:textSize="14sp"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:background="@color/suggestion_secondary"
+            android:textColor="@android:color/black"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/settings_button"
+            android:layout_width="0dp"
+            android:layout_height="36dp"
+            android:layout_weight="1"
+            android:text="⚙"
+            android:textSize="18sp"
+            android:background="@color/suggestion_primary"
+            android:textColor="@android:color/white" />
+    </LinearLayout>
+
+    <!-- Satır 2: qw, er, ty, uı, op -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -42,7 +114,7 @@
             android:layout_width="0dp"
             android:layout_height="@dimen/key_height"
             android:layout_weight="1"
-            android:text="uıi"
+            android:text="ui"
             style="@style/KeyBase" />
 
         <Button
@@ -54,7 +126,7 @@
             style="@style/KeyBase" />
     </LinearLayout>
 
-    <!-- Satır 2: as, df, gğh, jk, l- -->
+    <!-- Satır 3: as, df, gh, jk, l- -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -83,7 +155,7 @@
             android:layout_width="0dp"
             android:layout_height="@dimen/key_height"
             android:layout_weight="1"
-            android:text="gğh"
+            android:text="gh"
             style="@style/KeyBase" />
 
         <Button
@@ -103,7 +175,7 @@
             style="@style/KeyBase" />
     </LinearLayout>
 
-    <!-- Satır 3: ⇧, zx, cçv, bn, m', ⌫ -->
+    <!-- Satır 4: ⇧, zx, cv, bn, m', ⌫ -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -133,7 +205,7 @@
             android:layout_width="0dp"
             android:layout_height="@dimen/key_height"
             android:layout_weight="1"
-            android:text="cçv"
+            android:text="cv"
             style="@style/KeyBase" />
 
         <Button
@@ -162,7 +234,7 @@
             style="@style/KeyFunctional" />
     </LinearLayout>
 
-    <!-- Satır 4: 12#, ,, boşluk, ., ↵ -->
+    <!-- Satır 5: 12#, ,, boşluk, ., ↵ -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -191,7 +263,7 @@
             android:id="@+id/key_space"
             android:layout_width="0dp"
             android:layout_height="50dp"
-            android:layout_weight="2"
+            android:layout_weight="3"
             android:text="Boşluk"
             style="@style/KeySpace" />
 
