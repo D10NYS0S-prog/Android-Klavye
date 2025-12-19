@@ -22,7 +22,7 @@ val T9_MAPPING: Map<Int, String> = mapOf(
 )
 
 /**
- * T12 Tuş Düzeni - QWERTY tarzı kompakt klavye düzeni
+ * T16 Tuş Düzeni - QWERTY tarzı kompakt klavye düzeni
  * Her tuşta iki harf bulunur, çoklu basış ile karakterler arasında geçiş yapılır
  * 
  * Yeni Düzen:
@@ -31,7 +31,7 @@ val T9_MAPPING: Map<Int, String> = mapOf(
  * Satır 3: [⇧][zx] [cç] [bn] [m'][⌫]
  * Satır 4: [12#][,] [boşluk][.] [↵]
  */
-val T12_LAYOUT = mapOf(
+val T16_LAYOUT = mapOf(
     "qw" to "qwQW",
     "er" to "erER",
     "ty" to "tyTY",
@@ -49,9 +49,9 @@ val T12_LAYOUT = mapOf(
 )
 
 /**
- * T12 tuş ID'lerini karakter eşlemelerine bağlar
+ * T16 tuş ID'lerini karakter eşlemelerine bağlar
  */
-val T12_KEY_MAP = mapOf(
+val T16_KEY_MAP = mapOf(
     "key_qw" to "qwQW",
     "key_er" to "erER",
     "key_ty" to "tyTY",
@@ -84,13 +84,13 @@ fun getCharacterForKeyPress(key: Int, pressCount: Int): Char? {
 }
 
 /**
- * T12 tuşu için çoklu basış ile karakter seçimi
+ * T16 tuşu için çoklu basış ile karakter seçimi
  * @param chars Tuştaki karakterler (örn: "qwQW")
  * @param pressCount Kaç kez basıldığı
  * @param isShiftActive Shift tuşu aktif mi
  * @return Seçilen karakter
  */
-fun getT12Character(chars: String, pressCount: Int, isShiftActive: Boolean = false): Char? {
+fun getT16Character(chars: String, pressCount: Int, isShiftActive: Boolean = false): Char? {
     if (chars.isEmpty()) return null
     
     // Shift aktifse, büyük harf karakterlerini kullan
@@ -119,21 +119,21 @@ fun keysToSequence(keys: List<Int>): String {
 }
 
 /**
- * T12 tuş dizisinden kelime tahmini için karakter dizisi oluşturur
- * @param keySequence Basılan T12 tuşlarının listesi (örn: ["m", "er", "gh", "as", "bn", "as"])
+ * T16 tuş dizisinden kelime tahmini için karakter dizisi oluşturur
+ * @param keySequence Basılan T16 tuşlarının listesi (örn: ["m", "er", "gh", "as", "bn", "as"])
  * @return Olası kelime kombinasyonları
  */
-fun t12KeysToPattern(keySequence: List<String>): List<String> {
+fun t16KeysToPattern(keySequence: List<String>): List<String> {
     if (keySequence.isEmpty()) return listOf("")
     
     val firstKey = keySequence.first()
-    val chars = T12_LAYOUT[firstKey] ?: return listOf("")
+    val chars = T16_LAYOUT[firstKey] ?: return listOf("")
     
     if (keySequence.size == 1) {
         return chars.map { it.toString() }
     }
     
-    val restPatterns = t12KeysToPattern(keySequence.drop(1))
+    val restPatterns = t16KeysToPattern(keySequence.drop(1))
     val result = mutableListOf<String>()
     
     for (char in chars) {

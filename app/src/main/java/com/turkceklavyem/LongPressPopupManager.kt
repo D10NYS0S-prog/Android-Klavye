@@ -35,7 +35,7 @@ class LongPressPopupManager(private val context: Context) {
         "key_0" to listOf(" ", "0"),
         "key_1" to listOf(".", ",", "?", "!", "1", ";", ":", "'", "\""),
         
-        // T12 tuşları için
+        // T16 tuşları için
         "key_qw" to listOf("q", "w", "Q", "W"),
         "key_er" to listOf("e", "r", "E", "R"),
         "key_ty" to listOf("t", "y", "T", "Y"),

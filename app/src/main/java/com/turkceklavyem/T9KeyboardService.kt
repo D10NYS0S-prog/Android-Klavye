@@ -21,7 +21,14 @@ import android.graphics.Color
 
 class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPreferenceChangeListener {
     
-    private var isT9Mode = true  // true = T9 modu, false = T12 modu
+    // Klavye modları
+    enum class KeyboardMode {
+        T9,        // T9 modu (sayısal tuşlar)
+        T16,       // T16 modu (kompakt QWERTY, 2 harf/tuş)
+        STANDARD   // Standart QWERTY modu
+    }
+    
+    private var currentMode = KeyboardMode.T9
     private var isShiftActive = false  // Shift tuşu aktif mi
     private var currentInput = StringBuilder()
     private val wordDatabase = WordDatabase.getInstance()
@@ -29,18 +36,18 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
     private var currentSuggestions: List<String> = emptyList()
     private var currentSuggestionIndex = 0
     
-    // Kelime önerileri için (T9 ve T12 modunda)
+    // Kelime önerileri için (T9 modunda)
     private var suggestionsContainer: LinearLayout? = null
     private var suggestionsScrollView: HorizontalScrollView? = null
     
-    // T12 özel öneri butonları
+    // T16 ve Standard modda öneri butonları
     private var suggestion1Button: Button? = null
     private var suggestion2Button: Button? = null
     private var suggestion3Button: Button? = null
     private var suggestion4Button: Button? = null
     private var settingsButton: Button? = null
     
-    // Klavye içi ayarlar (T12 modunda)
+    // Klavye içi ayarlar
     private var inKeyboardSettingsPanel: View? = null
     private var isSettingsPanelVisible = false
     
@@ -171,13 +178,13 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
         }
     }
     
-    private fun setupT12SuggestionButtons() {
+    private fun setupT16SuggestionButtons() {
         // Öneri butonlarını ayarla
         listOf(suggestion1Button, suggestion2Button, suggestion3Button, suggestion4Button).forEach { button ->
             button?.setOnClickListener {
                 val word = it.tag as? String
                 if (word != null) {
-                    onT12SuggestionClicked(word)
+                    onT16SuggestionClicked(word)
                 }
             }
         }
@@ -188,7 +195,7 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
         }
     }
     
-    private fun updateT12Suggestions(suggestions: List<String>) {
+    private fun updateT16Suggestions(suggestions: List<String>) {
         val buttons = listOf(suggestion1Button, suggestion2Button, suggestion3Button, suggestion4Button)
         
         suggestions.take(4).forEachIndexed { index, word ->
@@ -205,7 +212,7 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
         }
     }
     
-    private fun onT12SuggestionClicked(word: String) {
+    private fun onT16SuggestionClicked(word: String) {
         performHapticFeedback()
         playSoundEffect()
         
@@ -219,7 +226,7 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
         wordDatabase.updateWordFrequency(word)
         currentInput.clear()
         currentSuggestions = emptyList()
-        updateT12Suggestions(emptyList())
+        updateT16Suggestions(emptyList())
         
         // Otomatik öğrenme
         if (isLearningEnabled) {
@@ -318,7 +325,11 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
     override fun onCreateInputView(): View {
         // Klavye görünümünü bağla - mod seçimine göre
         val inflater = LayoutInflater.from(this)
-        val layoutId = if (isT9Mode) R.layout.keyboard_layout else R.layout.keyboard_layout_t12
+        val layoutId = when (currentMode) {
+            KeyboardMode.T9 -> R.layout.keyboard_layout
+            KeyboardMode.T16 -> R.layout.keyboard_layout_t16
+            KeyboardMode.STANDARD -> R.layout.keyboard_layout_standard
+        }
         val keyboardView = inflater.inflate(layoutId, null)
         currentKeyboardView = keyboardView
         
@@ -329,18 +340,18 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
         applyKeyboardTheme(keyboardView)
         
         // T9 modunda kelime önerileri container'ı bul
-        if (isT9Mode) {
+        if (currentMode == KeyboardMode.T9) {
             suggestionsScrollView = keyboardView.findViewById(R.id.suggestions_scroll)
             suggestionsContainer = keyboardView.findViewById(R.id.suggestions_container)
         } else {
-            // T12 modunda öneri butonlarını ve ayarlar butonunu bul
+            // T16 ve Standard modunda öneri butonlarını ve ayarlar butonunu bul
             suggestion1Button = keyboardView.findViewById(R.id.suggestion_1)
             suggestion2Button = keyboardView.findViewById(R.id.suggestion_2)
             suggestion3Button = keyboardView.findViewById(R.id.suggestion_3)
             suggestion4Button = keyboardView.findViewById(R.id.suggestion_4)
             settingsButton = keyboardView.findViewById(R.id.settings_button)
             
-            setupT12SuggestionButtons()
+            setupT16SuggestionButtons()
         }
         
         // Tuş dinleyicilerini ayarla
@@ -429,10 +440,10 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
     }
     
     private fun setupKeyListeners(view: View) {
-        if (isT9Mode) {
-            setupT9KeyListeners(view)
-        } else {
-            setupT12KeyListeners(view)
+        when (currentMode) {
+            KeyboardMode.T9 -> setupT9KeyListeners(view)
+            KeyboardMode.T16 -> setupT16KeyListeners(view)
+            KeyboardMode.STANDARD -> setupStandardKeyListeners(view)
         }
         
         // Ortak tuşlar
@@ -502,7 +513,7 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
         }
     }
     
-    private fun setupT12KeyListeners(view: View) {
+    private fun setupT16KeyListeners(view: View) {
         // T12 tuşları - yeni düzen
         val keyMap = mapOf(
             R.id.key_qw to "qwQW",
@@ -525,7 +536,7 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
             val button = view.findViewById<Button>(keyId)
             button?.setOnClickListener {
                 if (!longPressPopupManager.isShowing()) {
-                    onT12KeyPressed(keyId.toString(), chars)
+                    onT16KeyPressed(keyId.toString(), chars)
                 }
             }
             
@@ -587,6 +598,50 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
         }
     }
     
+    private fun setupStandardKeyListeners(view: View) {
+        // Standart QWERTY klavye tuşları
+        val letterKeys = listOf(
+            R.id.key_q to "q", R.id.key_w to "w", R.id.key_e to "e", R.id.key_r to "r", 
+            R.id.key_t to "t", R.id.key_y to "y", R.id.key_u to "u", R.id.key_ı to "ı",
+            R.id.key_i to "i", R.id.key_o to "o", R.id.key_p to "p",
+            R.id.key_a to "a", R.id.key_s to "s", R.id.key_d to "d", R.id.key_f to "f",
+            R.id.key_g to "g", R.id.key_h to "h", R.id.key_j to "j", R.id.key_k to "k",
+            R.id.key_l to "l",
+            R.id.key_z to "z", R.id.key_x to "x", R.id.key_c to "c", R.id.key_v to "v",
+            R.id.key_b to "b", R.id.key_n to "n", R.id.key_m to "m"
+        )
+        
+        letterKeys.forEach { (keyId, char) ->
+            val button = view.findViewById<Button>(keyId)
+            button?.setOnClickListener {
+                onStandardKeyPressed(char)
+            }
+        }
+        
+        // Shift tuşu
+        view.findViewById<Button>(R.id.key_shift)?.setOnClickListener {
+            toggleShift()
+        }
+        
+        // Sembol tuşu
+        view.findViewById<Button>(R.id.key_symbols)?.setOnClickListener {
+            // TODO: Sembol modu
+        }
+        
+        // Noktalama tuşları
+        view.findViewById<Button>(R.id.key_space)?.setOnClickListener {
+            onSpacePressed()
+        }
+        
+        view.findViewById<Button>(R.id.key_dot)?.setOnClickListener {
+            currentInputConnection?.commitText(".", 1)
+        }
+        
+        view.findViewById<Button>(R.id.key_comma)?.setOnClickListener {
+            currentInputConnection?.commitText(",", 1)
+        }
+    }
+    
     private fun onT9KeyPressed(key: Int) {
         // Haptic ve ses feedback
         performHapticFeedback()
@@ -612,7 +667,7 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
         }
     }
     
-    private fun onT12KeyPressed(keyId: String, chars: String) {
+    private fun onT16KeyPressed(keyId: String, chars: String) {
         // Haptic ve ses feedback
         performHapticFeedback()
         playSoundEffect()
@@ -632,7 +687,7 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
             }
             
             // Yeni karakteri ekle
-            val char = getT12Character(chars, currentPressCount, isShiftActive)
+            val char = getT16Character(chars, currentPressCount, isShiftActive)
             currentInputConnection?.commitText(char.toString(), 1)
             currentInput.append(char)
             
@@ -647,7 +702,7 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
         } else {
             // Yeni tuş basıldı
             currentPressCount = 1
-            val char = getT12Character(chars, currentPressCount, isShiftActive)
+            val char = getT16Character(chars, currentPressCount, isShiftActive)
             currentInputConnection?.commitText(char.toString(), 1)
             currentInput.append(char)
             
@@ -664,10 +719,10 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
         if (currentInput.length >= 2) {
             val inputText = currentInput.toString().lowercase()
             currentSuggestions = wordDatabase.getWordsByPrefix(inputText).take(4)
-            updateT12Suggestions(currentSuggestions)
+            updateT16Suggestions(currentSuggestions)
         } else {
             currentSuggestions = emptyList()
-            updateT12Suggestions(emptyList())
+            updateT16Suggestions(emptyList())
         }
         
         // Shift'i tek kullanım için kapat
@@ -682,6 +737,38 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
             currentPressCount = 0
         }
         handler.postDelayed(commitRunnable!!, multiTapDelay)
+    }
+    
+    private fun onStandardKeyPressed(char: String) {
+        // Haptic ve ses feedback
+        performHapticFeedback()
+        playSoundEffect()
+        
+        // Shift durumuna göre karakteri belirle
+        val outputChar = if (isShiftActive) char.uppercase() else char
+        currentInputConnection?.commitText(outputChar, 1)
+        currentInput.append(outputChar)
+        
+        // Kelime önerileri al
+        if (currentInput.length >= 2) {
+            val inputText = currentInput.toString().lowercase()
+            currentSuggestions = wordDatabase.getWordsByPrefix(inputText).take(4)
+            updateT16Suggestions(currentSuggestions)
+        } else {
+            currentSuggestions = emptyList()
+            updateT16Suggestions(emptyList())
+        }
+        
+        // Shift'i tek kullanım için kapat
+        if (isShiftActive) {
+            isShiftActive = false
+            updateShiftButton()
+        }
+        
+        // Otomatik öğrenme için karakter ekle
+        if (isLearningEnabled) {
+            lastCommittedWord.append(outputChar)
+        }
     }
     
     private fun cycleSuggestion() {
@@ -726,7 +813,7 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
         )?.text?.toString() ?: ""
         
         if (currentInput.isNotEmpty()) {
-            if (isT9Mode) {
+            if (currentMode == KeyboardMode.T9) {
                 // T9 modunda önerilen kelimeyi kabul et ve öğren
                 if (currentSuggestions.isNotEmpty()) {
                     val word = currentSuggestions[0]
@@ -742,7 +829,7 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
                     currentInputConnection?.finishComposingText()
                 }
             } else {
-                // T12 modunda yazılan kelimeyi öğren
+                // T16 ve Standard modunda yazılan kelimeyi öğren
                 val word = currentInput.toString()
                 if (isLearningEnabled && word.length >= 2) {
                     wordDatabase.addWordToDatabase(word)
@@ -756,10 +843,10 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
         currentInput.clear()
         currentSuggestions = emptyList()
         
-        if (isT9Mode) {
+        if (currentMode == KeyboardMode.T9) {
             updateSuggestions(emptyList())
         } else {
-            updateT12Suggestions(emptyList())
+            updateT16Suggestions(emptyList())
         }
     }
     
@@ -768,11 +855,11 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
             // Henüz commit edilmemiş metin varsa
             currentInput.deleteCharAt(currentInput.length - 1)
             
-            // T12 modunda da silme işlemi yap
+            // T16 ve Standard modunda da silme işlemi yap
             currentInputConnection?.deleteSurroundingText(1, 0)
             
             if (currentInput.isNotEmpty()) {
-                if (isT9Mode) {
+                if (currentMode == KeyboardMode.T9) {
                     // T9 modunda yeni öneriler al
                     currentSuggestions = wordDatabase.getPossibleWords(currentInput.toString())
                     updateSuggestions(currentSuggestions)
@@ -782,22 +869,22 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
                         currentInputConnection?.setComposingText(currentInput.toString(), 1)
                     }
                 } else {
-                    // T12 modunda yeni öneriler al
+                    // T16 ve Standard modunda yeni öneriler al
                     if (currentInput.length >= 2) {
                         val inputText = currentInput.toString().lowercase()
                         currentSuggestions = wordDatabase.getWordsByPrefix(inputText).take(4)
-                        updateT12Suggestions(currentSuggestions)
+                        updateT16Suggestions(currentSuggestions)
                     } else {
                         currentSuggestions = emptyList()
-                        updateT12Suggestions(emptyList())
+                        updateT16Suggestions(emptyList())
                     }
                 }
             } else {
-                if (isT9Mode) {
+                if (currentMode == KeyboardMode.T9) {
                     currentInputConnection?.setComposingText("", 1)
                     updateSuggestions(emptyList())
                 } else {
-                    updateT12Suggestions(emptyList())
+                    updateT16Suggestions(emptyList())
                 }
             }
         } else {
@@ -816,7 +903,12 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
     }
     
     private fun toggleMode() {
-        isT9Mode = !isT9Mode
+        // Cycle through modes: T9 -> T16 -> Standard -> T9
+        currentMode = when (currentMode) {
+            KeyboardMode.T9 -> KeyboardMode.T16
+            KeyboardMode.T16 -> KeyboardMode.STANDARD
+            KeyboardMode.STANDARD -> KeyboardMode.T9
+        }
         isShiftActive = false
         currentInput.clear()
         currentSuggestions = emptyList()

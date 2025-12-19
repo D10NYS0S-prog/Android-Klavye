@@ -3,7 +3,7 @@ package com.turkceklavyem
 /**
  * WordDatabase - Kelime veritabanı yönetimi ve tahmin sistemi
  * 
- * Bu sınıf T9/T12 sisteminde kelime tahminleri için kullanılır.
+ * Bu sınıf T9/T16 sisteminde kelime tahminleri için kullanılır.
  * Basit bir in-memory sözlük ile başlayıp, ileride SQLite/Room entegrasyonu yapılabilir.
  * Singleton pattern kullanılarak tüm uygulamada tek bir instance kullanılır.
  */
@@ -59,8 +59,8 @@ class WordDatabase private constructor() {
         put("6677", mutableListOf("motor"))
     }
     
-    // T12 için kelime eşlemeleri (tuş kombinasyonlarına göre)
-    private val t12Words = mutableMapOf<String, MutableList<String>>().apply {
+    // T16 için kelime eşlemeleri (tuş kombinasyonlarına göre)
+    private val t16Words = mutableMapOf<String, MutableList<String>>().apply {
         // Örnek: "m-er-gh-as-bn-as" tuş dizisi için
         // Her tuşun ilk harfleri: m,e,g,a,b,a = "megaba" benzeri
         put("meghab", mutableListOf("merhaba"))
@@ -110,21 +110,21 @@ class WordDatabase private constructor() {
     }
     
     /**
-     * T12: Tuş kombinasyonlarından kelime tahmini
+     * T16: Tuş kombinasyonlarından kelime tahmini
      * @param keyPattern Tuş dizisi pattern'i (örn: "meghaba")
      * @return Olası kelime listesi
      */
-    fun predictT12Words(keyPattern: String): List<String> {
+    fun predictT16Words(keyPattern: String): List<String> {
         if (keyPattern.isEmpty()) return emptyList()
         
         val words = mutableListOf<String>()
         
         // Önce tam eşleşme ara
-        t12Words[keyPattern.lowercase()]?.let { words.addAll(it) }
+        t16Words[keyPattern.lowercase()]?.let { words.addAll(it) }
         learnedWords[keyPattern.lowercase()]?.let { words.addAll(it) }
         
         // Kısmi eşleşmeleri de ara
-        for ((pattern, wordList) in t12Words) {
+        for ((pattern, wordList) in t16Words) {
             if (pattern.startsWith(keyPattern.lowercase()) || 
                 keyPattern.lowercase().startsWith(pattern)) {
                 words.addAll(wordList)
@@ -135,7 +135,7 @@ class WordDatabase private constructor() {
     }
     
     /**
-     * Prefix ile başlayan kelimeleri döndürür (T12 modu için)
+     * Prefix ile başlayan kelimeleri döndürür (T16 modu için)
      * @param prefix Kelime ön eki
      * @return Ön ekle başlayan kelime listesi
      */
