@@ -26,6 +26,16 @@ class MainActivity : AppCompatActivity() {
         findViewById<Button>(R.id.btn_enable_keyboard)?.setOnClickListener {
             openInputMethodSettings()
         }
+        
+        // Klavye ayarları butonu - yeni eklendi
+        findViewById<Button>(R.id.btn_keyboard_settings)?.setOnClickListener {
+            openKeyboardPreferences()
+        }
+    }
+    
+    private fun openKeyboardPreferences() {
+        val intent = Intent(this, SettingsActivity::class.java)
+        startActivity(intent)
     }
     
     override fun onResume() {

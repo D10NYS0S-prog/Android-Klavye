@@ -64,18 +64,23 @@ Uygulama, profesyonel bir görünüm için Material Design prensipleriyle tasarl
 - ✅ **Kelime Tahmini Sistemi** - T9 modunda otomatik kelime önerisi
 - ✅ **Çoklu Basış Desteği** - Aynı tuşa hızlıca basarak farklı karakterler
 - ✅ **Shift Tuşu** - Büyük/küçük harf geçişi
-- ✅ **WordDatabase** - Kelime öğrenme ve tahmin sistemi
+- ✅ **WordDatabase** - Kelime öğrenme ve tahmin sistemi (genişletilmiş kelime listesi)
 - ✅ Silme (Backspace) ve Enter tuşları
 - ✅ T9/T12 mod değiştirme düğmesi
 - ✅ Composing text desteği (gerçek zamanlı öneri)
+- ✅ **Titreşim Desteği** - Tuş basışında haptik feedback
+- ✅ **Ses Desteği** - Tuş basışında ses efekti
+- ✅ **Ayarlar Ekranı** - Titreşim, ses ve diğer tercihleri özelleştirme
 
 ### Gelecek Özellikler (TODO)
+- 🔄 Sayı satırı opsiyonu (üst kısımda 0-9)
 - 🔄 PDF okuma ve kelime öğrenme (altyapı hazır)
 - 🔄 SQLite/Room veritabanı entegrasyonu
-- 🔄 Daha geniş Türkçe sözlük
-- 🔄 Uzun basış popup menüleri
-- 🔄 Sembol klavyesi (12# tuşu)
-- 🔄 Tema ve görünüm özelleştirmeleri
+- 🔄 Daha geniş Türkçe sözlük dosyası
+- 🔄 Uzun basış popup menüleri (özel karakterler için)
+- 🔄 Sembol klavyesi (12# tuşu) - gelişmiş mod
+- 🔄 Tema ve görünüm özelleştirmeleri (renk seçimi)
+- 🔄 Klavye yüksekliği ayarlama
 
 ## 🔧 Teknik Detaylar
 
@@ -179,6 +184,12 @@ Uygulama ilk açıldığında bir **kurulum rehberi** ekranı görünecektir. Bu
 - **T9 Modu**: Sayısal tuşlarla, çoklu basış ile harf girişi
 - **T12 Modu**: QWERTY düzeninde, her tuşta iki harf
 - **Mod Değiştirme**: Klavyenin üst kısmındaki **T9/T12** butonuna basın
+
+#### Adım 4: Klavye Ayarlarını Özelleştirme
+1. Ana uygulamada **"Klavye Tercihleri"** butonuna tıklayın
+2. Titreşim ve ses ayarlarını istediğiniz gibi değiştirin
+3. Kelime tahmini tercihlerini ayarlayın
+4. Öğrenilen kelimeleri temizleyebilirsiniz
 
 ### Test Senaryoları
 

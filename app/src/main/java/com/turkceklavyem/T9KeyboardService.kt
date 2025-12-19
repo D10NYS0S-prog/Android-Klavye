@@ -8,6 +8,11 @@ import android.view.inputmethod.EditorInfo
 import android.widget.Button
 import android.os.Handler
 import android.os.Looper
+import android.os.Vibrator
+import android.media.AudioManager
+import android.content.Context
+import android.content.SharedPreferences
+import androidx.preference.PreferenceManager
 
 class T9KeyboardService : InputMethodService() {
     
@@ -19,6 +24,13 @@ class T9KeyboardService : InputMethodService() {
     private var currentSuggestions: List<String> = emptyList()
     private var currentSuggestionIndex = 0
     
+    // Vibration ve ses için
+    private lateinit var vibrator: Vibrator
+    private lateinit var audioManager: AudioManager
+    private lateinit var prefs: SharedPreferences
+    private var vibrateOnKeypress = true
+    private var soundOnKeypress = true
+    
     // Çoklu basış için
     private var lastPressedKey: String? = null
     private var lastPressTime: Long = 0
@@ -27,6 +39,31 @@ class T9KeyboardService : InputMethodService() {
     
     private val handler = Handler(Looper.getMainLooper())
     private var commitRunnable: Runnable? = null
+    
+    override fun onCreate() {
+        super.onCreate()
+        vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        prefs = PreferenceManager.getDefaultSharedPreferences(this)
+        loadPreferences()
+    }
+    
+    private fun loadPreferences() {
+        vibrateOnKeypress = prefs.getBoolean("vibrate_on", true)
+        soundOnKeypress = prefs.getBoolean("sound_on", true)
+    }
+    
+    private fun performHapticFeedback() {
+        if (vibrateOnKeypress && vibrator.hasVibrator()) {
+            vibrator.vibrate(50) // 50ms vibrasyon
+        }
+    }
+    
+    private fun playSoundEffect() {
+        if (soundOnKeypress) {
+            audioManager.playSoundEffect(AudioManager.FX_KEYPRESS_STANDARD, 0.5f)
+        }
+    }
     
     override fun onCreateInputView(): View {
         // Klavye görünümünü bağla - mod seçimine göre
@@ -140,6 +177,10 @@ class T9KeyboardService : InputMethodService() {
     }
     
     private fun onT9KeyPressed(key: Int) {
+        // Haptic ve ses feedback
+        performHapticFeedback()
+        playSoundEffect()
+        
         // T9 modunda tuş basımını işle ve kelime tahmini yap
         currentInput.append(key)
         
@@ -158,6 +199,10 @@ class T9KeyboardService : InputMethodService() {
     }
     
     private fun onT12KeyPressed(keyId: String, chars: String) {
+        // Haptic ve ses feedback
+        performHapticFeedback()
+        playSoundEffect()
+        
         val currentTime = System.currentTimeMillis()
         
         // Aynı tuşa çabuk basıldıysa çoklu basış

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    
+    <PreferenceCategory
+        android:title="Geri Bildirim Ayarları"
+        android:key="feedback_settings">
+        
+        <SwitchPreference
+            android:key="vibrate_on"
+            android:title="Tuş Basışında Titreşim"
+            android:summary="Tuşlara basıldığında cihazı titret"
+            android:defaultValue="true" />
+        
+        <SwitchPreference
+            android:key="sound_on"
+            android:title="Tuş Basışında Ses"
+            android:summary="Tuşlara basıldığında ses efekti oynat"
+            android:defaultValue="true" />
+    </PreferenceCategory>
+    
+    <PreferenceCategory
+        android:title="Görünüm Ayarları"
+        android:key="appearance_settings">
+        
+        <SwitchPreference
+            android:key="show_number_row"
+            android:title="Sayı Satırı Göster"
+            android:summary="T12 modunda üst kısımda sayı satırı göster (yakında)"
+            android:defaultValue="false"
+            android:enabled="false" />
+    </PreferenceCategory>
+    
+    <PreferenceCategory
+        android:title="Kelime Tahmini"
+        android:key="prediction_settings">
+        
+        <SwitchPreference
+            android:key="enable_prediction"
+            android:title="Kelime Tahmini"
+            android:summary="T9 modunda otomatik kelime tahmini yap"
+            android:defaultValue="true" />
+        
+        <Preference
+            android:key="clear_learned_words"
+            android:title="Öğrenilen Kelimeleri Sil"
+            android:summary="Klavyenin öğrendiği tüm kelimeleri temizle" />
+    </PreferenceCategory>
+    
+    <PreferenceCategory
+        android:title="Hakkında"
+        android:key="about">
+        
+        <Preference
+            android:key="version"
+            android:title="Sürüm"
+            android:summary="1.0.0 - Türkçe T9/T12 Klavye"
+            android:selectable="false" />
+    </PreferenceCategory>
+</PreferenceScreen>

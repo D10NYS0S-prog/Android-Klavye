@@ -95,7 +95,18 @@
         android:id="@+id/btn_open_settings"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:text="Klavye Ayarlarını Aç"
+        android:text="Sistem Klavye Ayarları"
+        android:textSize="14sp"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:textColor="#6200EE"
+        android:layout_marginBottom="8dp" />
+
+    <!-- Keyboard Preferences Button -->
+    <Button
+        android:id="@+id/btn_keyboard_settings"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:text="⚙️ Klavye Tercihleri (Titreşim, Ses)"
         android:textSize="14sp"
         style="@style/Widget.AppCompat.Button.Borderless"
         android:textColor="#6200EE" />
