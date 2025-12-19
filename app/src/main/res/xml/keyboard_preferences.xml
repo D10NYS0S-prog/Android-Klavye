@@ -36,8 +36,7 @@
             android:summary="Klavye boyutunu ayarla (%)"
             android:min="50"
             android:max="100"
-            android:defaultValue="80"
-            android:showSeekBarValue="true" />
+            android:defaultValue="80" />
         
         <SwitchPreference
             android:key="show_number_row"
