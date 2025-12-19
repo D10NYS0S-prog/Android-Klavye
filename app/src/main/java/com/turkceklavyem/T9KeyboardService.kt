@@ -29,9 +29,11 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
     private var currentSuggestions: List<String> = emptyList()
     private var currentSuggestionIndex = 0
     
-    // Kelime önerileri için
-    private var suggestionButtons: List<Button> = emptyList()
-    private var settingsButton: Button? = null
+    // Kelime önerileri için (T9 modunda)
+    private var suggestionsContainer: LinearLayout? = null
+    private var suggestionsScrollView: HorizontalScrollView? = null
+    
+    // Klavye içi ayarlar (T12 modunda)
     private var inKeyboardSettingsPanel: View? = null
     
     // Uzun basış popup için
@@ -119,26 +121,44 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
     }
     
     private fun updateSuggestions(suggestions: List<String>) {
-        // T12 modunda kelime tahmin butonlarını güncelle
-        if (!isT9Mode && suggestionButtons.isNotEmpty()) {
-            suggestions.take(4).forEachIndexed { index, word ->
-                if (index < suggestionButtons.size) {
-                    suggestionButtons[index].apply {
-                        text = word
-                        visibility = View.VISIBLE
-                        setBackgroundColor(
-                            if (index == 0) resources.getColor(R.color.suggestion_primary, null)
-                            else resources.getColor(R.color.suggestion_secondary, null)
-                        )
-                        setTextColor(if (index == 0) Color.WHITE else Color.BLACK)
-                    }
+        suggestionsContainer?.removeAllViews()
+        
+        if (suggestions.isEmpty()) {
+            suggestionsScrollView?.visibility = View.GONE
+            return
+        }
+        
+        suggestionsScrollView?.visibility = View.VISIBLE
+        
+        suggestions.take(5).forEachIndexed { index, word ->
+            val button = Button(this).apply {
+                text = word
+                textSize = 16f
+                setPadding(24, 8, 24, 8)
+                isAllCaps = false
+                
+                // İlk öneriye vurgu yap - tema uyumlu
+                if (index == 0) {
+                    setBackgroundColor(resources.getColor(R.color.suggestion_primary, null))
+                    setTextColor(Color.WHITE)
+                } else {
+                    setBackgroundColor(resources.getColor(R.color.suggestion_secondary, null))
+                    setTextColor(Color.BLACK)
+                }
+                
+                setOnClickListener {
+                    onSuggestionClicked(word)
                 }
             }
-            // Gizle kullanılmayan butonları
-            for (i in suggestions.size until 4) {
-                if (i < suggestionButtons.size) {
-                    suggestionButtons[i].visibility = View.GONE
+            
+            suggestionsContainer?.addView(button)
+            
+            // Butonlar arasına boşluk ekle
+            if (index < suggestions.size - 1) {
+                val spacer = View(this).apply {
+                    layoutParams = LinearLayout.LayoutParams(16, 1)
                 }
+                suggestionsContainer?.addView(spacer)
             }
         }
     }
@@ -174,93 +194,16 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
         // Temayı uygula
         applyKeyboardTheme(keyboardView)
         
-        // T12 modunda kelime tahmin butonlarını ve ayarlar butonunu bul
-        if (!isT9Mode) {
-            suggestionButtons = listOf(
-                keyboardView.findViewById(R.id.suggestion_1),
-                keyboardView.findViewById(R.id.suggestion_2),
-                keyboardView.findViewById(R.id.suggestion_3),
-                keyboardView.findViewById(R.id.suggestion_4)
-            )
-            
-            // Her öneri butonuna tıklama dinleyicisi ekle
-            suggestionButtons.forEachIndexed { index, button ->
-                button.setOnClickListener {
-                    if (currentSuggestions.size > index) {
-                        onSuggestionClicked(currentSuggestions[index])
-                    }
-                }
-            }
-            
-            // Ayarlar butonu
-            settingsButton = keyboardView.findViewById(R.id.btn_settings)
-            settingsButton?.setOnClickListener {
-                toggleInKeyboardSettings()
-            }
-            
-            // Ayarlar paneli
-            inKeyboardSettingsPanel = keyboardView.findViewById(R.id.in_keyboard_settings)
-            setupInKeyboardSettings()
+        // T9 modunda kelime önerileri container'ı bul
+        if (isT9Mode) {
+            suggestionsScrollView = keyboardView.findViewById(R.id.suggestions_scroll)
+            suggestionsContainer = keyboardView.findViewById(R.id.suggestions_container)
         }
         
         // Tuş dinleyicilerini ayarla
         setupKeyListeners(keyboardView)
         
         return keyboardView
-    }
-    
-    private fun toggleInKeyboardSettings() {
-        inKeyboardSettingsPanel?.let { panel ->
-            panel.visibility = if (panel.visibility == View.VISIBLE) {
-                View.GONE
-            } else {
-                View.VISIBLE
-            }
-        }
-    }
-    
-    private fun setupInKeyboardSettings() {
-        inKeyboardSettingsPanel?.let { panel ->
-            // T9/T12 Geçişi
-            panel.findViewById<Button>(R.id.btn_mode_switch)?.setOnClickListener {
-                isT9Mode = !isT9Mode
-                setInputView(onCreateInputView())
-            }
-            
-            // Boyut Ayarı
-            panel.findViewById<Button>(R.id.btn_height_adjust)?.setOnClickListener {
-                // Ayarlar ekranını aç
-                val intent = android.content.Intent(android.provider.Settings.ACTION_INPUT_METHOD_SETTINGS)
-                intent.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
-                startActivity(intent)
-            }
-            
-            // Titreşim/Ses
-            panel.findViewById<Button>(R.id.btn_feedback_settings)?.setOnClickListener {
-                // Ana ayarlar ekranını aç
-                val intent = android.content.Intent(android.provider.Settings.ACTION_INPUT_METHOD_SETTINGS)
-                intent.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
-                startActivity(intent)
-            }
-            
-            // Tema
-            panel.findViewById<Button>(R.id.btn_theme_settings)?.setOnClickListener {
-                // Temayı değiştir (döngüsel olarak)
-                keyboardTheme = when (keyboardTheme) {
-                    "light" -> "dark"
-                    "dark" -> "blue"
-                    "blue" -> "green"
-                    else -> "light"
-                }
-                prefs.edit().putString("keyboard_theme", keyboardTheme).apply()
-                setInputView(onCreateInputView())
-            }
-            
-            // Kapat
-            panel.findViewById<Button>(R.id.btn_close_settings)?.setOnClickListener {
-                panel.visibility = View.GONE
-            }
-        }
     }
     
     private fun applyKeyboardHeight(view: View) {
