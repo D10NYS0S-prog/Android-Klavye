@@ -204,16 +204,33 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
     private fun updateT16Suggestions(suggestions: List<String>) {
         val buttons = listOf(suggestion1Button, suggestion2Button, suggestion3Button, suggestion4Button)
         
-        suggestions.take(4).forEachIndexed { index, word ->
+        // Ensure at least 3 suggestions are visible - add placeholders if needed
+        val minSuggestions = 3
+        val suggestionsToShow = if (suggestions.size >= minSuggestions) {
+            suggestions.take(4)
+        } else {
+            // Add empty placeholders to fill up to minimum
+            suggestions + List(minSuggestions - suggestions.size) { "" }
+        }
+        
+        suggestionsToShow.take(4).forEachIndexed { index, word ->
             buttons[index]?.apply {
-                text = word
-                tag = word
-                visibility = View.VISIBLE
+                if (word.isNotEmpty()) {
+                    text = word
+                    tag = word
+                    visibility = View.VISIBLE
+                    isEnabled = true
+                } else {
+                    text = ""
+                    tag = null
+                    visibility = View.VISIBLE
+                    isEnabled = false
+                }
             }
         }
         
-        // Kullanılmayan butonları gizle
-        for (i in suggestions.size until 4) {
+        // Hide any extra buttons beyond our suggestions
+        for (i in suggestionsToShow.size until 4) {
             buttons[i]?.visibility = View.GONE
         }
     }
@@ -761,6 +778,7 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
         if (isShiftActive) {
             isShiftActive = false
             updateShiftButton()
+            updateKeyLabels()
         }
         
         // Zamanlayıcı ayarla
@@ -795,6 +813,7 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
         if (isShiftActive) {
             isShiftActive = false
             updateShiftButton()
+            updateKeyLabels()
         }
         
         // Otomatik öğrenme için karakter ekle
@@ -830,11 +849,65 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
     private fun toggleShift() {
         isShiftActive = !isShiftActive
         updateShiftButton()
+        updateKeyLabels()
     }
     
     private fun updateShiftButton() {
         currentKeyboardView?.findViewById<Button>(R.id.key_shift)?.apply {
             alpha = if (isShiftActive) 1.0f else 0.5f
+        }
+    }
+    
+    private fun updateKeyLabels() {
+        // Update key labels based on shift state
+        when (currentMode) {
+            KeyboardMode.T16 -> updateT16KeyLabels()
+            KeyboardMode.STANDARD -> updateStandardKeyLabels()
+            KeyboardMode.T9 -> {} // T9 doesn't need label updates
+        }
+    }
+    
+    private fun updateT16KeyLabels() {
+        currentKeyboardView?.apply {
+            val keyMap = mapOf(
+                R.id.key_qw to if (isShiftActive) "QW" else "qw",
+                R.id.key_er to if (isShiftActive) "ER" else "er",
+                R.id.key_ty to if (isShiftActive) "TY" else "ty",
+                R.id.key_ui to if (isShiftActive) "Uİ" else "uı",
+                R.id.key_op to if (isShiftActive) "OP" else "op",
+                R.id.key_as to if (isShiftActive) "AS" else "as",
+                R.id.key_df to if (isShiftActive) "DF" else "df",
+                R.id.key_gh to if (isShiftActive) "GH" else "gh",
+                R.id.key_jk to if (isShiftActive) "JK" else "jk",
+                R.id.key_l to if (isShiftActive) "L-" else "l-",
+                R.id.key_zx to if (isShiftActive) "ZX" else "zx",
+                R.id.key_cv to if (isShiftActive) "CV" else "cv",
+                R.id.key_bn to if (isShiftActive) "BN" else "bn",
+                R.id.key_m to if (isShiftActive) "M'" else "m'"
+            )
+            
+            keyMap.forEach { (keyId, label) ->
+                findViewById<Button>(keyId)?.text = label
+            }
+        }
+    }
+    
+    private fun updateStandardKeyLabels() {
+        currentKeyboardView?.apply {
+            val letterKeys = listOf(
+                R.id.key_q to "q", R.id.key_w to "w", R.id.key_e to "e", R.id.key_r to "r",
+                R.id.key_t to "t", R.id.key_y to "y", R.id.key_u to "u", R.id.key_ı to "ı",
+                R.id.key_i to "i", R.id.key_o to "o", R.id.key_p to "p",
+                R.id.key_a to "a", R.id.key_s to "s", R.id.key_d to "d", R.id.key_f to "f",
+                R.id.key_g to "g", R.id.key_h to "h", R.id.key_j to "j", R.id.key_k to "k",
+                R.id.key_l to "l",
+                R.id.key_z to "z", R.id.key_x to "x", R.id.key_c to "c", R.id.key_v to "v",
+                R.id.key_b to "b", R.id.key_n to "n", R.id.key_m to "m"
+            )
+            
+            letterKeys.forEach { (keyId, char) ->
+                findViewById<Button>(keyId)?.text = if (isShiftActive) char.uppercase() else char
+            }
         }
     }
     
