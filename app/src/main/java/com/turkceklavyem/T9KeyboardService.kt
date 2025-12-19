@@ -73,6 +73,7 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
     // Görünüm ayarları
     private var keyboardHeight = 80 // Yüzde olarak
     private var keyboardTheme = "light"
+    private var showNumberRow = false // Sayı satırı göster/gizle
     
     // Çoklu basış için
     private var lastPressedKey: String? = null
@@ -120,6 +121,7 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
         keyboardHeight = prefs.getInt("keyboard_height", 80)
         keyboardTheme = prefs.getString("keyboard_theme", "light") ?: "light"
         isLearningEnabled = prefs.getBoolean("auto_learn", true)
+        showNumberRow = prefs.getBoolean("show_number_row", false)
     }
     
     private fun performHapticFeedback() {
@@ -317,6 +319,13 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
                 hideSettingsPanel()
             }
             
+            findViewById<Button>(R.id.btn_number_row_toggle)?.setOnClickListener {
+                // Sayı satırını göster/gizle
+                showNumberRow = !showNumberRow
+                prefs.edit().putBoolean("show_number_row", showNumberRow).apply()
+                hideSettingsPanel()
+            }
+            
             findViewById<Button>(R.id.btn_close_settings)?.setOnClickListener {
                 hideSettingsPanel()
             }
@@ -381,6 +390,16 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
             settingsButton = keyboardView.findViewById(R.id.settings_button)
             
             setupT16SuggestionButtons()
+        }
+        
+        // Sayı satırını göster/gizle (T16 ve Standard için)
+        if (currentMode == KeyboardMode.T16 || currentMode == KeyboardMode.STANDARD) {
+            val numberRow = keyboardView.findViewById<LinearLayout>(R.id.number_row)
+            numberRow?.visibility = if (showNumberRow) View.VISIBLE else View.GONE
+            
+            if (showNumberRow) {
+                setupNumberRowListeners(keyboardView)
+            }
         }
         
         // Tuş dinleyicilerini ayarla
@@ -1152,6 +1171,24 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
             performHapticFeedback()
             playSoundEffect()
             currentInputConnection?.commitText(".", 1)
+        }
+    }
+    
+    private fun setupNumberRowListeners(view: View) {
+        // Sayı satırı tuşları için dinleyiciler
+        val numberKeys = mapOf(
+            R.id.key_num_1 to "1", R.id.key_num_2 to "2", R.id.key_num_3 to "3",
+            R.id.key_num_4 to "4", R.id.key_num_5 to "5", R.id.key_num_6 to "6",
+            R.id.key_num_7 to "7", R.id.key_num_8 to "8", R.id.key_num_9 to "9",
+            R.id.key_num_0 to "0"
+        )
+        
+        numberKeys.forEach { (keyId, number) ->
+            view.findViewById<Button>(keyId)?.setOnClickListener {
+                performHapticFeedback()
+                playSoundEffect()
+                currentInputConnection?.commitText(number, 1)
+            }
         }
     }
     
