@@ -33,6 +33,31 @@ TurkceKlavyem/
 
 ## ✨ Özellikler
 
+### Kelime Önerileri
+T9 modunda yazdığınız sırada klavyenin üst kısmında kelime önerileri görünür:
+- **Örnek:** "6-3-7" (m-e-r) tuşlarına basın → "mera", "merak", "meram", "mersin" önerileri
+- İstediğiniz kelimeye tıklayarak doğrudan yazabilirsiniz
+- Backspace ile geri aldığınızda öneriler güncellenir
+- * tuşu ile öneriler arasında geçiş yapabilirsiniz
+
+### Uzun Basış Menüleri
+Herhangi bir tuşa uzun basarak (0.5 saniye) özel karakterlere erişin:
+- **T9 Tuşları:** 2 → a, b, c, ç, 2 / 4 → g, ğ, h, ı, i, 4
+- **T12 Tuşları:** gğ → g, ğ, h, G, Ğ, H / cç → c, ç, v, C, Ç, V
+- **Noktalama:** . → ., !, ?, > / , → ,, ;, <
+- **Semboller:** Tuş 1 → ., ,, ?, !, ;, :, ', "
+
+### Klavye Özelleştirme
+Ayarlar menüsünden klavyenizi kişiselleştirin:
+- **Yükseklik Ayarlama:** %50-100 arası, ihtiyacınıza göre klavye boyutu
+- **Tema Seçimi:** 
+  - 🌞 Açık Tema (varsayılan)
+  - 🌙 Koyu Tema
+  - 🔵 Mavi Tema
+  - 🟢 Yeşil Tema
+- **Geri Bildirim:** Titreşim ve ses ayarları
+- **Kelime Tahmini:** Açma/kapama ve öğrenilen kelimeleri temizleme
+
 ## 🎨 Tasarım ve Tema
 
 ### Modern Material Design
@@ -62,7 +87,9 @@ Uygulama, profesyonel bir görünüm için Material Design prensipleriyle tasarl
 - ✅ 3x4 T9 tuş düzeni (0-9, *, #)
 - ✅ 4-satır T12 QWERTY düzeni (shift, sembol tuşlarıyla)
 - ✅ **Kelime Tahmini Sistemi** - T9 modunda otomatik kelime önerisi
+- ✅ **Kelime Önerileri Çubuğu** - Klavye üstünde kaydırılabilir öneri satırı
 - ✅ **Çoklu Basış Desteği** - Aynı tuşa hızlıca basarak farklı karakterler
+- ✅ **Uzun Basış Popup Menüleri** - Özel karakterlere hızlı erişim
 - ✅ **Shift Tuşu** - Büyük/küçük harf geçişi
 - ✅ **WordDatabase** - Kelime öğrenme ve tahmin sistemi (genişletilmiş kelime listesi)
 - ✅ Silme (Backspace) ve Enter tuşları
@@ -71,16 +98,16 @@ Uygulama, profesyonel bir görünüm için Material Design prensipleriyle tasarl
 - ✅ **Titreşim Desteği** - Tuş basışında haptik feedback
 - ✅ **Ses Desteği** - Tuş basışında ses efekti
 - ✅ **Ayarlar Ekranı** - Titreşim, ses ve diğer tercihleri özelleştirme
+- ✅ **Klavye Yükseklik Ayarlama** - %50-100 arası ayarlanabilir
+- ✅ **Tema Özelleştirme** - Açık, Koyu, Mavi, Yeşil temalar
 
 ### Gelecek Özellikler (TODO)
-- 🔄 Sayı satırı opsiyonu (üst kısımda 0-9)
+- 🔄 Sayı satırı opsiyonu (üst kısımda 0-9) - ayarlarda hazır
 - 🔄 PDF okuma ve kelime öğrenme (altyapı hazır)
 - 🔄 SQLite/Room veritabanı entegrasyonu
 - 🔄 Daha geniş Türkçe sözlük dosyası
-- 🔄 Uzun basış popup menüleri (özel karakterler için)
 - 🔄 Sembol klavyesi (12# tuşu) - gelişmiş mod
-- 🔄 Tema ve görünüm özelleştirmeleri (renk seçimi)
-- 🔄 Klavye yüksekliği ayarlama
+- 🔄 Emoji desteği
 
 ## 🔧 Teknik Detaylar
 
