@@ -158,6 +158,24 @@ class WordDatabase private constructor() {
     }
     
     /**
+     * Kelimeyi doğrudan veritabanına ekler (dosya içe aktarma için)
+     * @param word Eklenecek kelime
+     */
+    fun addWordToDatabase(word: String) {
+        if (word.isEmpty() || word.length < 2) return
+        
+        val keySeq = wordToT9Sequence(word)
+        if (keySeq.isNotEmpty()) {
+            val words = turkishWords.getOrPut(keySeq) { mutableListOf() }
+            if (!words.contains(word)) {
+                words.add(word)
+                // Yeni kelimeye başlangıç sıklığı ver
+                wordFrequency[word] = 1
+            }
+        }
+    }
+    
+    /**
      * PDF veya metin dosyasından kelimeleri öğrenir (gelecekte implement edilecek)
      * @param text Metin içeriği
      */

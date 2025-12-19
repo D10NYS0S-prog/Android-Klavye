@@ -31,6 +31,16 @@ class MainActivity : AppCompatActivity() {
         findViewById<Button>(R.id.btn_keyboard_settings)?.setOnClickListener {
             openKeyboardPreferences()
         }
+        
+        // Sözlük içe aktarma butonu
+        findViewById<Button>(R.id.btn_import_dictionary)?.setOnClickListener {
+            openDictionaryImport()
+        }
+    }
+    
+    private fun openDictionaryImport() {
+        val intent = Intent(this, DictionaryImportActivity::class.java)
+        startActivity(intent)
     }
     
     private fun openKeyboardPreferences() {

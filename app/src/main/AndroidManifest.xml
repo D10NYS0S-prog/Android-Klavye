@@ -2,6 +2,8 @@
     package="com.turkceklavyem">
 
     <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" 
+        android:maxSdkVersion="32" />
 
     <application
         android:allowBackup="true"
@@ -25,6 +27,13 @@
             android:name=".SettingsActivity"
             android:exported="false"
             android:label="Klavye Ayarları"
+            android:parentActivityName=".MainActivity" />
+        
+        <!-- Sözlük içe aktarma aktivitesi -->
+        <activity
+            android:name=".DictionaryImportActivity"
+            android:exported="false"
+            android:label="Sözlük İçe Aktar"
             android:parentActivityName=".MainActivity" />
         
         <!-- Klavye servisi -->
