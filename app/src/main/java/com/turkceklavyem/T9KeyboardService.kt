@@ -228,11 +228,6 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
                 }
             }
         }
-        
-        // Hide any extra buttons beyond our minimum display count (after 4th button)
-        for (i in 4 until buttons.size) {
-            buttons[i]?.visibility = View.GONE
-        }
     }
     
     private fun onT16SuggestionClicked(word: String) {
@@ -873,7 +868,7 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
                 R.id.key_qw to if (isShiftActive) "QW" else "qw",
                 R.id.key_er to if (isShiftActive) "ER" else "er",
                 R.id.key_ty to if (isShiftActive) "TY" else "ty",
-                R.id.key_ui to if (isShiftActive) "Uİ" else "uı",
+                R.id.key_ui to if (isShiftActive) "UİI" else "uıi",
                 R.id.key_op to if (isShiftActive) "OP" else "op",
                 R.id.key_as to if (isShiftActive) "AS" else "as",
                 R.id.key_df to if (isShiftActive) "DF" else "df",

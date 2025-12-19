@@ -115,7 +115,7 @@
             android:layout_width="0dp"
             android:layout_height="@dimen/key_height"
             android:layout_weight="1"
-            android:text="ui"
+            android:text="uıi"
             style="@style/KeyBase" />
 
         <Button
