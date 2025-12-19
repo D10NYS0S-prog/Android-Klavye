@@ -33,6 +33,10 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
     private var suggestionsContainer: LinearLayout? = null
     private var suggestionsScrollView: HorizontalScrollView? = null
     
+    // Uzun basış popup için
+    private lateinit var longPressPopupManager: LongPressPopupManager
+    private val longPressDelay = 500L // 500ms uzun basış
+    
     // Vibration ve ses için
     private lateinit var vibrator: Vibrator
     private lateinit var audioManager: AudioManager
@@ -59,6 +63,7 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
         audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
         prefs = PreferenceManager.getDefaultSharedPreferences(this)
         prefs.registerOnSharedPreferenceChangeListener(this)
+        longPressPopupManager = LongPressPopupManager(this)
         loadPreferences()
     }
     
@@ -291,14 +296,39 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
         )
         
         keyIds.forEachIndexed { index, keyId ->
-            view.findViewById<Button>(keyId)?.setOnClickListener {
-                onT9KeyPressed(index + 1)
+            val button = view.findViewById<Button>(keyId)
+            button?.setOnClickListener {
+                if (!longPressPopupManager.isShowing()) {
+                    onT9KeyPressed(index + 1)
+                }
+            }
+            
+            // Uzun basış desteği
+            button?.setOnLongClickListener {
+                val keyIdStr = resources.getResourceEntryName(keyId)
+                longPressPopupManager.showPopup(button, keyIdStr) { char ->
+                    performHapticFeedback()
+                    playSoundEffect()
+                    currentInputConnection?.commitText(char, 1)
+                }
+                true
             }
         }
         
         // Özel tuşlar
-        view.findViewById<Button>(R.id.key_0)?.setOnClickListener {
-            onSpacePressed()
+        val key0 = view.findViewById<Button>(R.id.key_0)
+        key0?.setOnClickListener {
+            if (!longPressPopupManager.isShowing()) {
+                onSpacePressed()
+            }
+        }
+        key0?.setOnLongClickListener {
+            longPressPopupManager.showPopup(key0, "key_0") { char ->
+                performHapticFeedback()
+                playSoundEffect()
+                currentInputConnection?.commitText(char, 1)
+            }
+            true
         }
         
         view.findViewById<Button>(R.id.key_star)?.setOnClickListener {
@@ -330,8 +360,22 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
         )
         
         keyMap.forEach { (keyId, chars) ->
-            view.findViewById<Button>(keyId)?.setOnClickListener {
-                onT12KeyPressed(keyId.toString(), chars)
+            val button = view.findViewById<Button>(keyId)
+            button?.setOnClickListener {
+                if (!longPressPopupManager.isShowing()) {
+                    onT12KeyPressed(keyId.toString(), chars)
+                }
+            }
+            
+            // Uzun basış desteği ekle
+            button?.setOnLongClickListener {
+                val keyIdStr = resources.getResourceEntryName(keyId)
+                longPressPopupManager.showPopup(button, keyIdStr) { char ->
+                    performHapticFeedback()
+                    playSoundEffect()
+                    currentInputConnection?.commitText(char, 1)
+                }
+                true
             }
         }
         
@@ -350,12 +394,34 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
             onSpacePressed()
         }
         
-        view.findViewById<Button>(R.id.key_dot)?.setOnClickListener {
-            currentInputConnection?.commitText(".", 1)
+        val dotButton = view.findViewById<Button>(R.id.key_dot)
+        dotButton?.setOnClickListener {
+            if (!longPressPopupManager.isShowing()) {
+                currentInputConnection?.commitText(".", 1)
+            }
+        }
+        dotButton?.setOnLongClickListener {
+            longPressPopupManager.showPopup(dotButton, "key_dot") { char ->
+                performHapticFeedback()
+                playSoundEffect()
+                currentInputConnection?.commitText(char, 1)
+            }
+            true
         }
         
-        view.findViewById<Button>(R.id.key_comma)?.setOnClickListener {
-            currentInputConnection?.commitText(",", 1)
+        val commaButton = view.findViewById<Button>(R.id.key_comma)
+        commaButton?.setOnClickListener {
+            if (!longPressPopupManager.isShowing()) {
+                currentInputConnection?.commitText(",", 1)
+            }
+        }
+        commaButton?.setOnLongClickListener {
+            longPressPopupManager.showPopup(commaButton, "key_comma") { char ->
+                performHapticFeedback()
+                playSoundEffect()
+                currentInputConnection?.commitText(char, 1)
+            }
+            true
         }
     }
     
