@@ -25,7 +25,8 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
     enum class KeyboardMode {
         T9,        // T9 modu (sayısal tuşlar)
         T16,       // T16 modu (kompakt QWERTY, 2 harf/tuş)
-        STANDARD   // Standart QWERTY modu
+        STANDARD,  // Standart QWERTY modu
+        SYMBOLS    // Sembol modu (sayılar ve özel karakterler)
     }
     
     private var currentMode = KeyboardMode.T9
@@ -72,6 +73,7 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
     // Görünüm ayarları
     private var keyboardHeight = 80 // Yüzde olarak
     private var keyboardTheme = "light"
+    private var showNumberRow = false // Sayı satırı göster/gizle
     
     // Çoklu basış için
     private var lastPressedKey: String? = null
@@ -119,6 +121,7 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
         keyboardHeight = prefs.getInt("keyboard_height", 80)
         keyboardTheme = prefs.getString("keyboard_theme", "light") ?: "light"
         isLearningEnabled = prefs.getBoolean("auto_learn", true)
+        showNumberRow = prefs.getBoolean("show_number_row", false)
     }
     
     private fun performHapticFeedback() {
@@ -204,17 +207,29 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
     private fun updateT16Suggestions(suggestions: List<String>) {
         val buttons = listOf(suggestion1Button, suggestion2Button, suggestion3Button, suggestion4Button)
         
-        suggestions.take(4).forEachIndexed { index, word ->
-            buttons[index]?.apply {
-                text = word
-                tag = word
-                visibility = View.VISIBLE
-            }
+        // Ensure at least 3 suggestions are visible - add placeholders if needed
+        val minSuggestions = 3
+        val suggestionsToShow = if (suggestions.size >= minSuggestions) {
+            suggestions.take(4)
+        } else {
+            // Add empty placeholders to fill up to minimum
+            suggestions + List(minSuggestions - suggestions.size) { "" }
         }
         
-        // Kullanılmayan butonları gizle
-        for (i in suggestions.size until 4) {
-            buttons[i]?.visibility = View.GONE
+        suggestionsToShow.take(4).forEachIndexed { index, word ->
+            buttons[index]?.apply {
+                if (word.isNotEmpty()) {
+                    text = word
+                    tag = word
+                    visibility = View.VISIBLE
+                    isEnabled = true
+                } else {
+                    text = ""
+                    tag = null
+                    visibility = View.VISIBLE
+                    isEnabled = false
+                }
+            }
         }
     }
     
@@ -304,6 +319,13 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
                 hideSettingsPanel()
             }
             
+            findViewById<Button>(R.id.btn_number_row_toggle)?.setOnClickListener {
+                // Sayı satırını göster/gizle
+                showNumberRow = !showNumberRow
+                prefs.edit().putBoolean("show_number_row", showNumberRow).apply()
+                hideSettingsPanel()
+            }
+            
             findViewById<Button>(R.id.btn_close_settings)?.setOnClickListener {
                 hideSettingsPanel()
             }
@@ -335,6 +357,7 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
             KeyboardMode.T9 -> R.layout.keyboard_layout
             KeyboardMode.T16 -> R.layout.keyboard_layout_t16
             KeyboardMode.STANDARD -> R.layout.keyboard_layout_standard
+            KeyboardMode.SYMBOLS -> R.layout.keyboard_layout_symbols
         }
         val keyboardView = inflater.inflate(layoutId, null)
         currentKeyboardView = keyboardView
@@ -349,6 +372,15 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
         if (currentMode == KeyboardMode.T9) {
             suggestionsScrollView = keyboardView.findViewById(R.id.suggestions_scroll)
             suggestionsContainer = keyboardView.findViewById(R.id.suggestions_container)
+        } else if (currentMode == KeyboardMode.SYMBOLS) {
+            // Sembol modunda da öneri butonlarını kullan
+            suggestion1Button = keyboardView.findViewById(R.id.suggestion_1)
+            suggestion2Button = keyboardView.findViewById(R.id.suggestion_2)
+            suggestion3Button = keyboardView.findViewById(R.id.suggestion_3)
+            suggestion4Button = keyboardView.findViewById(R.id.suggestion_4)
+            settingsButton = keyboardView.findViewById(R.id.settings_button)
+            
+            setupT16SuggestionButtons()
         } else {
             // T16 ve Standard modunda öneri butonlarını ve ayarlar butonunu bul
             suggestion1Button = keyboardView.findViewById(R.id.suggestion_1)
@@ -358,6 +390,16 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
             settingsButton = keyboardView.findViewById(R.id.settings_button)
             
             setupT16SuggestionButtons()
+        }
+        
+        // Sayı satırını göster/gizle (T16 ve Standard için)
+        if (currentMode == KeyboardMode.T16 || currentMode == KeyboardMode.STANDARD) {
+            val numberRow = keyboardView.findViewById<LinearLayout>(R.id.number_row)
+            numberRow?.visibility = if (showNumberRow) View.VISIBLE else View.GONE
+            
+            if (showNumberRow) {
+                setupNumberRowListeners(keyboardView)
+            }
         }
         
         // Tuş dinleyicilerini ayarla
@@ -450,6 +492,7 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
             KeyboardMode.T9 -> setupT9KeyListeners(view)
             KeyboardMode.T16 -> setupT16KeyListeners(view)
             KeyboardMode.STANDARD -> setupStandardKeyListeners(view)
+            KeyboardMode.SYMBOLS -> setupSymbolsKeyListeners(view)
         }
         
         // Ortak tuşlar
@@ -565,7 +608,7 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
         
         // Sembol tuşu
         view.findViewById<Button>(R.id.key_symbols)?.setOnClickListener {
-            // TODO: Sembol modu
+            switchToSymbolsMode()
         }
         
         // Noktalama tuşları
@@ -631,7 +674,7 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
         
         // Sembol tuşu
         view.findViewById<Button>(R.id.key_symbols)?.setOnClickListener {
-            // TODO: Sembol modu
+            switchToSymbolsMode()
         }
         
         // Noktalama tuşları
@@ -761,6 +804,7 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
         if (isShiftActive) {
             isShiftActive = false
             updateShiftButton()
+            updateKeyLabels()
         }
         
         // Zamanlayıcı ayarla
@@ -795,6 +839,7 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
         if (isShiftActive) {
             isShiftActive = false
             updateShiftButton()
+            updateKeyLabels()
         }
         
         // Otomatik öğrenme için karakter ekle
@@ -830,11 +875,65 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
     private fun toggleShift() {
         isShiftActive = !isShiftActive
         updateShiftButton()
+        updateKeyLabels()
     }
     
     private fun updateShiftButton() {
         currentKeyboardView?.findViewById<Button>(R.id.key_shift)?.apply {
             alpha = if (isShiftActive) 1.0f else 0.5f
+        }
+    }
+    
+    private fun updateKeyLabels() {
+        // Update key labels based on shift state
+        when (currentMode) {
+            KeyboardMode.T16 -> updateT16KeyLabels()
+            KeyboardMode.STANDARD -> updateStandardKeyLabels()
+            KeyboardMode.T9 -> {} // T9 doesn't need label updates
+        }
+    }
+    
+    private fun updateT16KeyLabels() {
+        currentKeyboardView?.apply {
+            val keyMap = mapOf(
+                R.id.key_qw to if (isShiftActive) "QW" else "qw",
+                R.id.key_er to if (isShiftActive) "ER" else "er",
+                R.id.key_ty to if (isShiftActive) "TY" else "ty",
+                R.id.key_ui to if (isShiftActive) "UİI" else "uıi",
+                R.id.key_op to if (isShiftActive) "OP" else "op",
+                R.id.key_as to if (isShiftActive) "AS" else "as",
+                R.id.key_df to if (isShiftActive) "DF" else "df",
+                R.id.key_gh to if (isShiftActive) "GH" else "gh",
+                R.id.key_jk to if (isShiftActive) "JK" else "jk",
+                R.id.key_l to if (isShiftActive) "L-" else "l-",
+                R.id.key_zx to if (isShiftActive) "ZX" else "zx",
+                R.id.key_cv to if (isShiftActive) "CV" else "cv",
+                R.id.key_bn to if (isShiftActive) "BN" else "bn",
+                R.id.key_m to if (isShiftActive) "M'" else "m'"
+            )
+            
+            keyMap.forEach { (keyId, label) ->
+                findViewById<Button>(keyId)?.text = label
+            }
+        }
+    }
+    
+    private fun updateStandardKeyLabels() {
+        currentKeyboardView?.apply {
+            val letterKeys = listOf(
+                R.id.key_q to "q", R.id.key_w to "w", R.id.key_e to "e", R.id.key_r to "r",
+                R.id.key_t to "t", R.id.key_y to "y", R.id.key_u to "u", R.id.key_ı to "ı",
+                R.id.key_i to "i", R.id.key_o to "o", R.id.key_p to "p",
+                R.id.key_a to "a", R.id.key_s to "s", R.id.key_d to "d", R.id.key_f to "f",
+                R.id.key_g to "g", R.id.key_h to "h", R.id.key_j to "j", R.id.key_k to "k",
+                R.id.key_l to "l",
+                R.id.key_z to "z", R.id.key_x to "x", R.id.key_c to "c", R.id.key_v to "v",
+                R.id.key_b to "b", R.id.key_n to "n", R.id.key_m to "m"
+            )
+            
+            letterKeys.forEach { (keyId, char) ->
+                findViewById<Button>(keyId)?.text = if (isShiftActive) char.uppercase() else char
+            }
         }
     }
     
@@ -954,11 +1053,12 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
     }
     
     private fun toggleMode() {
-        // Cycle through modes: T9 -> T16 -> Standard -> T9
+        // Cycle through modes: T9 -> T16 -> Standard -> T9 (excluding SYMBOLS)
         currentMode = when (currentMode) {
             KeyboardMode.T9 -> KeyboardMode.T16
             KeyboardMode.T16 -> KeyboardMode.STANDARD
             KeyboardMode.STANDARD -> KeyboardMode.T9
+            KeyboardMode.SYMBOLS -> KeyboardMode.T16  // Return to T16 if somehow in symbols
         }
         isShiftActive = false
         currentInput.clear()
@@ -966,6 +1066,130 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
         t16KeySequence.clear()  // T16 tuş dizisini temizle
         // Klavye görünümünü yeniden oluştur
         setInputView(onCreateInputView())
+    }
+    
+    private fun switchToSymbolsMode() {
+        performHapticFeedback()
+        playSoundEffect()
+        currentMode = KeyboardMode.SYMBOLS
+        isShiftActive = false
+        currentInput.clear()
+        currentSuggestions = emptyList()
+        t16KeySequence.clear()
+        // Klavye görünümünü yeniden oluştur
+        setInputView(onCreateInputView())
+    }
+    
+    private fun switchToLettersMode() {
+        performHapticFeedback()
+        playSoundEffect()
+        // Return to T16 mode (most versatile letter mode)
+        currentMode = KeyboardMode.T16
+        isShiftActive = false
+        currentInput.clear()
+        currentSuggestions = emptyList()
+        t16KeySequence.clear()
+        // Klavye görünümünü yeniden oluştur
+        setInputView(onCreateInputView())
+    }
+    
+    private fun setupSymbolsKeyListeners(view: View) {
+        // Sayı tuşları (0-9)
+        val numberKeys = mapOf(
+            R.id.key_sym_1 to "1", R.id.key_sym_2 to "2", R.id.key_sym_3 to "3",
+            R.id.key_sym_4 to "4", R.id.key_sym_5 to "5", R.id.key_sym_6 to "6",
+            R.id.key_sym_7 to "7", R.id.key_sym_8 to "8", R.id.key_sym_9 to "9",
+            R.id.key_sym_0 to "0"
+        )
+        
+        numberKeys.forEach { (keyId, char) ->
+            view.findViewById<Button>(keyId)?.setOnClickListener {
+                performHapticFeedback()
+                playSoundEffect()
+                currentInputConnection?.commitText(char, 1)
+            }
+        }
+        
+        // Özel karakterler
+        val symbolKeys = mapOf(
+            R.id.key_sym_at to "@", R.id.key_sym_hash to "#", R.id.key_sym_dollar to "$",
+            R.id.key_sym_percent to "%", R.id.key_sym_ampersand to "&", R.id.key_sym_asterisk to "*",
+            R.id.key_sym_minus to "-", R.id.key_sym_plus to "+", R.id.key_sym_equals to "=",
+            R.id.key_sym_lparen to "(", R.id.key_sym_rparen to ")", R.id.key_sym_lbrace to "{",
+            R.id.key_sym_rbrace to "}", R.id.key_sym_lbracket to "[", R.id.key_sym_rbracket to "]",
+            R.id.key_sym_less to "<", R.id.key_sym_greater to ">", R.id.key_sym_slash to "/",
+            R.id.key_sym_backslash to "\\", R.id.key_sym_exclamation to "!", R.id.key_sym_question to "?",
+            R.id.key_sym_colon to ":", R.id.key_sym_semicolon to ";", R.id.key_sym_quote to "\"",
+            R.id.key_sym_apostrophe to "'", R.id.key_sym_backtick to "`", R.id.key_sym_tilde to "~"
+        )
+        
+        symbolKeys.forEach { (keyId, char) ->
+            view.findViewById<Button>(keyId)?.setOnClickListener {
+                performHapticFeedback()
+                playSoundEffect()
+                currentInputConnection?.commitText(char, 1)
+            }
+        }
+        
+        // ABC tuşu - harflere dön
+        view.findViewById<Button>(R.id.key_letters)?.setOnClickListener {
+            switchToLettersMode()
+        }
+        
+        // Shift tuşu - sembol modunda fonksiyonel değil, sadece görsel
+        view.findViewById<Button>(R.id.key_sym_shift)?.setOnClickListener {
+            performHapticFeedback()
+            // Sembol modunda shift işlevi yok, ileride ek semboller için kullanılabilir
+        }
+        
+        // Backspace
+        view.findViewById<Button>(R.id.key_backspace)?.setOnClickListener {
+            onBackspacePressed()
+        }
+        
+        // Enter
+        view.findViewById<Button>(R.id.key_enter)?.setOnClickListener {
+            onEnterPressed()
+        }
+        
+        // Space
+        view.findViewById<Button>(R.id.key_space)?.setOnClickListener {
+            performHapticFeedback()
+            playSoundEffect()
+            currentInputConnection?.commitText(" ", 1)
+        }
+        
+        // Comma
+        view.findViewById<Button>(R.id.key_comma)?.setOnClickListener {
+            performHapticFeedback()
+            playSoundEffect()
+            currentInputConnection?.commitText(",", 1)
+        }
+        
+        // Dot
+        view.findViewById<Button>(R.id.key_dot)?.setOnClickListener {
+            performHapticFeedback()
+            playSoundEffect()
+            currentInputConnection?.commitText(".", 1)
+        }
+    }
+    
+    private fun setupNumberRowListeners(view: View) {
+        // Sayı satırı tuşları için dinleyiciler
+        val numberKeys = mapOf(
+            R.id.key_num_1 to "1", R.id.key_num_2 to "2", R.id.key_num_3 to "3",
+            R.id.key_num_4 to "4", R.id.key_num_5 to "5", R.id.key_num_6 to "6",
+            R.id.key_num_7 to "7", R.id.key_num_8 to "8", R.id.key_num_9 to "9",
+            R.id.key_num_0 to "0"
+        )
+        
+        numberKeys.forEach { (keyId, number) ->
+            view.findViewById<Button>(keyId)?.setOnClickListener {
+                performHapticFeedback()
+                playSoundEffect()
+                currentInputConnection?.commitText(number, 1)
+            }
+        }
     }
     
     override fun onStartInputView(info: EditorInfo?, restarting: Boolean) {

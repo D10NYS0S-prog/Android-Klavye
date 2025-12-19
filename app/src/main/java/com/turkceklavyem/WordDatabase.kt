@@ -65,7 +65,18 @@ class WordDatabase private constructor() {
         // Her tuşun ilk harfleri: m,e,g,a,b,a = "megaba" benzeri
         put("meghab", mutableListOf("merhaba"))
         put("merghaba", mutableListOf("merhaba"))
-        // Daha fazla kombinasyon eklenebilir
+        // Daha fazla yaygın kelimeler
+        put("gherluier", mutableListOf("gelir"))
+        put("gherlui", mutableListOf("gelir"))
+        put("ghel", mutableListOf("gel"))
+        put("ghit", mutableListOf("git"))
+        put("ghun", mutableListOf("gün"))
+        put("ghuzel", mutableListOf("güzel"))
+        put("gheldi", mutableListOf("geldi"))
+        put("ghiit", mutableListOf("gitti"))
+        put("ghore", mutableListOf("göre"))
+        put("ghoster", mutableListOf("göster"))
+        put("ghelecek", mutableListOf("gelecek"))
     }
     
     // Kullanıcı tarafından öğrenilen kelimeler
@@ -170,20 +181,20 @@ class WordDatabase private constructor() {
     fun getWordsFromT16KeySequence(keySequence: List<String>): List<String> {
         if (keySequence.isEmpty()) return emptyList()
         
-        // T16 tuş eşlemeleri
+        // T16 tuş eşlemeleri - Türkçe karakterler dahil
         val keyToChars = mapOf(
             "qw" to "qw",
             "er" to "er",
             "ty" to "ty",
-            "ui" to "uı",
-            "op" to "op",
+            "ui" to "uıi",  // u, ı, i karakterleri
+            "op" to "opö",   // o, p, ö karakterleri
             "as" to "as",
             "df" to "df",
-            "gh" to "gh",
+            "gh" to "gğh",   // g, ğ, h karakterleri
             "jk" to "jk",
             "l" to "l",
             "zx" to "zx",
-            "cv" to "cv",
+            "cv" to "cçv",   // c, ç, v karakterleri
             "bn" to "bn",
             "m" to "m"
         )
@@ -202,14 +213,30 @@ class WordDatabase private constructor() {
         val allWords = turkishWords.values.flatten() + learnedWords.values.flatten()
         
         for (combo in combinations) {
-            val word = combo.joinToString("")
-            if (allWords.contains(word)) {
-                matchedWords.add(word)
+            val word = combo.joinToString("").lowercase()
+            // Tam eşleşme kontrolü - tek iterasyonda hem kontrol hem al
+            allWords.firstOrNull { it.lowercase() == word }?.let { matchedWords.add(it) }
+        }
+        
+        // Prefix bazlı eşleşmeleri de ekle (kombinasyonların prefix'i ile başlayan kelimeler)
+        // Optimize: single pass with early termination
+        if (matchedWords.size < 4 && combinations.isNotEmpty()) {
+            val prefixes = combinations.take(3).map { it.joinToString("").lowercase() }.filter { it.length >= 2 }
+            for (prefix in prefixes) {
+                if (matchedWords.size >= 4) break
+                for (word in allWords) {
+                    if (matchedWords.size >= 4) break
+                    if (word.lowercase().startsWith(prefix)) {
+                        matchedWords.add(word)
+                    }
+                }
             }
         }
         
-        // Sıklığa göre sırala
-        return matchedWords.toList().sortedByDescending { wordFrequency[it] ?: 0 }
+        // Sıklığa göre sırala ve en fazla 4 sonuç döndür
+        return matchedWords.toList()
+            .sortedByDescending { wordFrequency[it] ?: 0 }
+            .take(4)
     }
     
     /**
@@ -350,7 +377,14 @@ class WordDatabase private constructor() {
             "sevgili", "aşk", "mutlu", "üzgün", "kötü", "güzel",
             "büyük", "küçük", "yeni", "eski", "hızlı", "yavaş",
             "su", "yemek", "içmek", "gelmek", "gitmek", "almak",
-            "vermek", "yapmak", "etmek", "olmak", "bilmek", "görmek"
+            "vermek", "yapmak", "etmek", "olmak", "bilmek", "görmek",
+            // Fiil çekimleri ve yaygın kelimeler
+            "gelir", "gider", "geldi", "gitti", "gelecek", "gidecek",
+            "gel", "git", "gün", "göre", "göster", "gör",
+            "için", "ancak", "veya", "ile", "kadar", "gibi",
+            "daha", "çok", "az", "bir", "iki", "üç",
+            "var", "yok", "oldu", "olur", "olacak", "olan",
+            "ben", "sen", "biz", "siz", "mı", "mi", "mu", "mü"
         )
         
         for (word in commonWords) {

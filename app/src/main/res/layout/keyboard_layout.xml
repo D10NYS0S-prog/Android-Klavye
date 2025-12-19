@@ -143,7 +143,7 @@
             style="@style/KeyBase" />
     </LinearLayout>
 
-    <!-- 4. Satır: *, 0, # -->
+    <!-- 4. Satır: *, 0 (Boşluk), # -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -163,10 +163,19 @@
             android:id="@+id/key_0"
             android:layout_width="0dp"
             android:layout_height="50dp"
-            android:layout_weight="1"
+            android:layout_weight="2"
             android:text="0\nBoşluk"
             android:textSize="14sp"
             style="@style/KeyBase" />
+
+        <Button
+            android:id="@+id/key_enter"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            android:text="↵"
+            android:textSize="20sp"
+            style="@style/KeyFunctional" />
 
         <Button
             android:id="@+id/key_hash"
@@ -174,23 +183,6 @@
             android:layout_height="50dp"
             android:layout_weight="1"
             android:text="#\nOK"
-            android:textSize="14sp"
-            style="@style/KeyFunctional" />
-    </LinearLayout>
-
-    <!-- 5. Satır: Enter -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:layout_marginTop="4dp">
-
-        <Button
-            android:id="@+id/key_enter"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:text="Enter ↵"
             android:textSize="14sp"
             style="@style/KeyFunctional" />
     </LinearLayout>
