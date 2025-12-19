@@ -25,7 +25,8 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
     enum class KeyboardMode {
         T9,        // T9 modu (sayısal tuşlar)
         T16,       // T16 modu (kompakt QWERTY, 2 harf/tuş)
-        STANDARD   // Standart QWERTY modu
+        STANDARD,  // Standart QWERTY modu
+        SYMBOLS    // Sembol modu (sayılar ve özel karakterler)
     }
     
     private var currentMode = KeyboardMode.T9
@@ -347,6 +348,7 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
             KeyboardMode.T9 -> R.layout.keyboard_layout
             KeyboardMode.T16 -> R.layout.keyboard_layout_t16
             KeyboardMode.STANDARD -> R.layout.keyboard_layout_standard
+            KeyboardMode.SYMBOLS -> R.layout.keyboard_layout_symbols
         }
         val keyboardView = inflater.inflate(layoutId, null)
         currentKeyboardView = keyboardView
@@ -361,6 +363,15 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
         if (currentMode == KeyboardMode.T9) {
             suggestionsScrollView = keyboardView.findViewById(R.id.suggestions_scroll)
             suggestionsContainer = keyboardView.findViewById(R.id.suggestions_container)
+        } else if (currentMode == KeyboardMode.SYMBOLS) {
+            // Sembol modunda da öneri butonlarını kullan
+            suggestion1Button = keyboardView.findViewById(R.id.suggestion_1)
+            suggestion2Button = keyboardView.findViewById(R.id.suggestion_2)
+            suggestion3Button = keyboardView.findViewById(R.id.suggestion_3)
+            suggestion4Button = keyboardView.findViewById(R.id.suggestion_4)
+            settingsButton = keyboardView.findViewById(R.id.settings_button)
+            
+            setupT16SuggestionButtons()
         } else {
             // T16 ve Standard modunda öneri butonlarını ve ayarlar butonunu bul
             suggestion1Button = keyboardView.findViewById(R.id.suggestion_1)
@@ -462,6 +473,7 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
             KeyboardMode.T9 -> setupT9KeyListeners(view)
             KeyboardMode.T16 -> setupT16KeyListeners(view)
             KeyboardMode.STANDARD -> setupStandardKeyListeners(view)
+            KeyboardMode.SYMBOLS -> setupSymbolsKeyListeners(view)
         }
         
         // Ortak tuşlar
@@ -577,7 +589,7 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
         
         // Sembol tuşu
         view.findViewById<Button>(R.id.key_symbols)?.setOnClickListener {
-            // TODO: Sembol modu
+            switchToSymbolsMode()
         }
         
         // Noktalama tuşları
@@ -643,7 +655,7 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
         
         // Sembol tuşu
         view.findViewById<Button>(R.id.key_symbols)?.setOnClickListener {
-            // TODO: Sembol modu
+            switchToSymbolsMode()
         }
         
         // Noktalama tuşları
@@ -1022,11 +1034,12 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
     }
     
     private fun toggleMode() {
-        // Cycle through modes: T9 -> T16 -> Standard -> T9
+        // Cycle through modes: T9 -> T16 -> Standard -> T9 (excluding SYMBOLS)
         currentMode = when (currentMode) {
             KeyboardMode.T9 -> KeyboardMode.T16
             KeyboardMode.T16 -> KeyboardMode.STANDARD
             KeyboardMode.STANDARD -> KeyboardMode.T9
+            KeyboardMode.SYMBOLS -> KeyboardMode.T16  // Return to T16 if somehow in symbols
         }
         isShiftActive = false
         currentInput.clear()
@@ -1034,6 +1047,112 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
         t16KeySequence.clear()  // T16 tuş dizisini temizle
         // Klavye görünümünü yeniden oluştur
         setInputView(onCreateInputView())
+    }
+    
+    private fun switchToSymbolsMode() {
+        performHapticFeedback()
+        playSoundEffect()
+        currentMode = KeyboardMode.SYMBOLS
+        isShiftActive = false
+        currentInput.clear()
+        currentSuggestions = emptyList()
+        t16KeySequence.clear()
+        // Klavye görünümünü yeniden oluştur
+        setInputView(onCreateInputView())
+    }
+    
+    private fun switchToLettersMode() {
+        performHapticFeedback()
+        playSoundEffect()
+        // Return to T16 mode (most versatile letter mode)
+        currentMode = KeyboardMode.T16
+        isShiftActive = false
+        currentInput.clear()
+        currentSuggestions = emptyList()
+        t16KeySequence.clear()
+        // Klavye görünümünü yeniden oluştur
+        setInputView(onCreateInputView())
+    }
+    
+    private fun setupSymbolsKeyListeners(view: View) {
+        // Sayı tuşları (0-9)
+        val numberKeys = mapOf(
+            R.id.key_sym_1 to "1", R.id.key_sym_2 to "2", R.id.key_sym_3 to "3",
+            R.id.key_sym_4 to "4", R.id.key_sym_5 to "5", R.id.key_sym_6 to "6",
+            R.id.key_sym_7 to "7", R.id.key_sym_8 to "8", R.id.key_sym_9 to "9",
+            R.id.key_sym_0 to "0"
+        )
+        
+        numberKeys.forEach { (keyId, char) ->
+            view.findViewById<Button>(keyId)?.setOnClickListener {
+                performHapticFeedback()
+                playSoundEffect()
+                currentInputConnection?.commitText(char, 1)
+            }
+        }
+        
+        // Özel karakterler
+        val symbolKeys = mapOf(
+            R.id.key_sym_at to "@", R.id.key_sym_hash to "#", R.id.key_sym_dollar to "$",
+            R.id.key_sym_percent to "%", R.id.key_sym_ampersand to "&", R.id.key_sym_asterisk to "*",
+            R.id.key_sym_minus to "-", R.id.key_sym_plus to "+", R.id.key_sym_equals to "=",
+            R.id.key_sym_lparen to "(", R.id.key_sym_rparen to ")", R.id.key_sym_lbrace to "{",
+            R.id.key_sym_rbrace to "}", R.id.key_sym_lbracket to "[", R.id.key_sym_rbracket to "]",
+            R.id.key_sym_less to "<", R.id.key_sym_greater to ">", R.id.key_sym_slash to "/",
+            R.id.key_sym_backslash to "\\", R.id.key_sym_exclamation to "!", R.id.key_sym_question to "?",
+            R.id.key_sym_colon to ":", R.id.key_sym_semicolon to ";", R.id.key_sym_quote to "\"",
+            R.id.key_sym_apostrophe to "'", R.id.key_sym_backtick to "`", R.id.key_sym_tilde to "~"
+        )
+        
+        symbolKeys.forEach { (keyId, char) ->
+            view.findViewById<Button>(keyId)?.setOnClickListener {
+                performHapticFeedback()
+                playSoundEffect()
+                currentInputConnection?.commitText(char, 1)
+            }
+        }
+        
+        // ABC tuşu - harflere dön
+        view.findViewById<Button>(R.id.key_letters)?.setOnClickListener {
+            switchToLettersMode()
+        }
+        
+        // Shift tuşu - sembol modunda fonksiyonel değil, sadece görsel
+        view.findViewById<Button>(R.id.key_sym_shift)?.setOnClickListener {
+            performHapticFeedback()
+            // Sembol modunda shift işlevi yok, ileride ek semboller için kullanılabilir
+        }
+        
+        // Backspace
+        view.findViewById<Button>(R.id.key_backspace)?.setOnClickListener {
+            onBackspacePressed()
+        }
+        
+        // Enter
+        view.findViewById<Button>(R.id.key_enter)?.setOnClickListener {
+            onEnterPressed()
+        }
+        
+        // Space
+        view.findViewById<Button>(R.id.key_space)?.setOnClickListener {
+            performHapticFeedback()
+            playSoundEffect()
+            currentInputConnection?.commitText(" ", 1)
+        }
+        
+        // Comma
+        view.findViewById<Button>(R.id.key_comma)?.setOnClickListener {
+            performHapticFeedback()
+            playSoundEffect()
+            currentInputConnection?.commitText(",", 1)
+        }
+        
+        // Dot
+        view.findViewById<Button>(R.id.key_dot)?.setOnClickListener {
+            performHapticFeedback()
+            playSoundEffect()
+            currentInputConnection?.commitText(".", 1)
+        }
     }
     
     override fun onStartInputView(info: EditorInfo?, restarting: Boolean) {
