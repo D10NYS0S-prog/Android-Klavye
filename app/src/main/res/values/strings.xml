@@ -4,4 +4,19 @@
     <string name="keyboard_label">Türkçe T9/T12 Klavye</string>
     <string name="mode_t9">T9 Modu</string>
     <string name="mode_t12">T12 Modu</string>
+    
+    <!-- Theme names -->
+    <string-array name="theme_names">
+        <item>Açık Tema</item>
+        <item>Koyu Tema</item>
+        <item>Mavi Tema</item>
+        <item>Yeşil Tema</item>
+    </string-array>
+    
+    <string-array name="theme_values">
+        <item>light</item>
+        <item>dark</item>
+        <item>blue</item>
+        <item>green</item>
+    </string-array>
 </resources>

@@ -22,6 +22,23 @@
         android:title="Görünüm Ayarları"
         android:key="appearance_settings">
         
+        <ListPreference
+            android:key="keyboard_theme"
+            android:title="Klavye Teması"
+            android:summary="Klavye renk temasını seçin"
+            android:entries="@array/theme_names"
+            android:entryValues="@array/theme_values"
+            android:defaultValue="light" />
+        
+        <SeekBarPreference
+            android:key="keyboard_height"
+            android:title="Klavye Yüksekliği"
+            android:summary="Klavye boyutunu ayarla (%)"
+            android:min="50"
+            android:max="100"
+            android:defaultValue="80"
+            android:showSeekBarValue="true" />
+        
         <SwitchPreference
             android:key="show_number_row"
             android:title="Sayı Satırı Göster"

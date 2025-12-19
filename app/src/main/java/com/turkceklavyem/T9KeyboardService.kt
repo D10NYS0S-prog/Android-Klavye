@@ -40,6 +40,10 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
     private var vibrateOnKeypress = true
     private var soundOnKeypress = true
     
+    // Görünüm ayarları
+    private var keyboardHeight = 80 // Yüzde olarak
+    private var keyboardTheme = "light"
+    
     // Çoklu basış için
     private var lastPressedKey: String? = null
     private var lastPressTime: Long = 0
@@ -68,12 +72,19 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
         // Ayarlar değiştiğinde tercihleri yeniden yükle
         when (key) {
             "vibrate_on", "sound_on" -> loadPreferences()
+            "keyboard_height", "keyboard_theme" -> {
+                loadPreferences()
+                // Klavyeyi yeniden oluştur
+                setInputView(onCreateInputView())
+            }
         }
     }
     
     private fun loadPreferences() {
         vibrateOnKeypress = prefs.getBoolean("vibrate_on", true)
         soundOnKeypress = prefs.getBoolean("sound_on", true)
+        keyboardHeight = prefs.getInt("keyboard_height", 80)
+        keyboardTheme = prefs.getString("keyboard_theme", "light") ?: "light"
     }
     
     private fun performHapticFeedback() {
@@ -158,6 +169,12 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
         val keyboardView = inflater.inflate(layoutId, null)
         currentKeyboardView = keyboardView
         
+        // Klavye yüksekliğini ayarla
+        applyKeyboardHeight(keyboardView)
+        
+        // Temayı uygula
+        applyKeyboardTheme(keyboardView)
+        
         // Kelime önerileri container'ı bul
         suggestionsScrollView = keyboardView.findViewById(R.id.suggestions_scroll)
         suggestionsContainer = keyboardView.findViewById(R.id.suggestions_container)
@@ -166,6 +183,82 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
         setupKeyListeners(keyboardView)
         
         return keyboardView
+    }
+    
+    private fun applyKeyboardHeight(view: View) {
+        // Klavye yüksekliğini yüzde olarak uygula
+        val params = view.layoutParams
+        if (params != null) {
+            val displayMetrics = resources.displayMetrics
+            val screenHeight = displayMetrics.heightPixels
+            val newHeight = (screenHeight * keyboardHeight / 100).toInt()
+            params.height = newHeight
+            view.layoutParams = params
+        }
+    }
+    
+    private fun applyKeyboardTheme(view: View) {
+        // Temayı uygula
+        when (keyboardTheme) {
+            "dark" -> {
+                view.setBackgroundColor(Color.parseColor("#263238"))
+                applyDarkThemeToButtons(view)
+            }
+            "blue" -> {
+                view.setBackgroundColor(Color.parseColor("#1565C0"))
+                applyBlueThemeToButtons(view)
+            }
+            "green" -> {
+                view.setBackgroundColor(Color.parseColor("#2E7D32"))
+                applyGreenThemeToButtons(view)
+            }
+            else -> {
+                // Light tema (varsayılan)
+                view.setBackgroundColor(Color.parseColor("#ECEFF1"))
+            }
+        }
+    }
+    
+    private fun applyDarkThemeToButtons(view: View) {
+        // Koyu temayı tuşlara uygula
+        val buttons = getAllButtons(view)
+        buttons.forEach { button ->
+            button.setBackgroundColor(Color.parseColor("#37474F"))
+            button.setTextColor(Color.WHITE)
+        }
+    }
+    
+    private fun applyBlueThemeToButtons(view: View) {
+        // Mavi temayı tuşlara uygula
+        val buttons = getAllButtons(view)
+        buttons.forEach { button ->
+            button.setBackgroundColor(Color.parseColor("#1976D2"))
+            button.setTextColor(Color.WHITE)
+        }
+    }
+    
+    private fun applyGreenThemeToButtons(view: View) {
+        // Yeşil temayı tuşlara uygula
+        val buttons = getAllButtons(view)
+        buttons.forEach { button ->
+            button.setBackgroundColor(Color.parseColor("#388E3C"))
+            button.setTextColor(Color.WHITE)
+        }
+    }
+    
+    private fun getAllButtons(view: View): List<Button> {
+        val buttons = mutableListOf<Button>()
+        if (view is android.view.ViewGroup) {
+            for (i in 0 until view.childCount) {
+                val child = view.getChildAt(i)
+                if (child is Button) {
+                    buttons.add(child)
+                } else if (child is android.view.ViewGroup) {
+                    buttons.addAll(getAllButtons(child))
+                }
+            }
+        }
+        return buttons
     }
     
     private fun setupKeyListeners(view: View) {
