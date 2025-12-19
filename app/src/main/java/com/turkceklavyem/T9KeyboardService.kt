@@ -578,7 +578,7 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
             R.id.key_zx to "zxZX",
             R.id.key_cv to "cvCV",
             R.id.key_bn to "bnBN",
-            R.id.key_m to "m'M'"
+            R.id.key_m to "m\'M\'"
         )
         
         keyMap.forEach { (keyId, chars) ->
@@ -890,6 +890,7 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
             KeyboardMode.T16 -> updateT16KeyLabels()
             KeyboardMode.STANDARD -> updateStandardKeyLabels()
             KeyboardMode.T9 -> {} // T9 doesn't need label updates
+            KeyboardMode.SYMBOLS -> {} // Symbols don't need label updates
         }
     }
     
