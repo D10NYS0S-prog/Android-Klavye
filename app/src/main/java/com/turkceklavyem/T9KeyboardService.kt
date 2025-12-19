@@ -6,6 +6,8 @@ import android.view.LayoutInflater
 import android.view.KeyEvent
 import android.view.inputmethod.EditorInfo
 import android.widget.Button
+import android.widget.LinearLayout
+import android.widget.HorizontalScrollView
 import android.os.Handler
 import android.os.Looper
 import android.os.Vibrator
@@ -15,6 +17,7 @@ import android.media.AudioManager
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
+import android.graphics.Color
 
 class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPreferenceChangeListener {
     
@@ -25,6 +28,10 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
     private var currentKeyboardView: View? = null
     private var currentSuggestions: List<String> = emptyList()
     private var currentSuggestionIndex = 0
+    
+    // Kelime önerileri için
+    private var suggestionsContainer: LinearLayout? = null
+    private var suggestionsScrollView: HorizontalScrollView? = null
     
     // Vibration ve ses için
     private lateinit var vibrator: Vibrator
@@ -89,12 +96,71 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
         }
     }
     
+    private fun updateSuggestions(suggestions: List<String>) {
+        suggestionsContainer?.removeAllViews()
+        
+        if (suggestions.isEmpty()) {
+            suggestionsScrollView?.visibility = View.GONE
+            return
+        }
+        
+        suggestionsScrollView?.visibility = View.VISIBLE
+        
+        suggestions.take(5).forEachIndexed { index, word ->
+            val button = Button(this).apply {
+                text = word
+                textSize = 16f
+                setPadding(24, 8, 24, 8)
+                isAllCaps = false
+                
+                // İlk öneriye vurgu yap
+                if (index == 0) {
+                    setBackgroundColor(Color.parseColor("#6200EE"))
+                    setTextColor(Color.WHITE)
+                } else {
+                    setBackgroundColor(Color.parseColor("#F5F5F5"))
+                    setTextColor(Color.BLACK)
+                }
+                
+                setOnClickListener {
+                    onSuggestionClicked(word)
+                }
+            }
+            
+            suggestionsContainer?.addView(button)
+            
+            // Butonlar arasına boşluk ekle
+            if (index < suggestions.size - 1) {
+                val spacer = View(this).apply {
+                    layoutParams = LinearLayout.LayoutParams(16, 1)
+                }
+                suggestionsContainer?.addView(spacer)
+            }
+        }
+    }
+    
+    private fun onSuggestionClicked(word: String) {
+        performHapticFeedback()
+        playSoundEffect()
+        
+        currentInputConnection?.finishComposingText()
+        currentInputConnection?.commitText(word, 1)
+        wordDatabase.updateWordFrequency(word)
+        currentInput.clear()
+        currentSuggestions = emptyList()
+        updateSuggestions(emptyList())
+    }
+    
     override fun onCreateInputView(): View {
         // Klavye görünümünü bağla - mod seçimine göre
         val inflater = LayoutInflater.from(this)
         val layoutId = if (isT9Mode) R.layout.keyboard_layout else R.layout.keyboard_layout_t12
         val keyboardView = inflater.inflate(layoutId, null)
         currentKeyboardView = keyboardView
+        
+        // Kelime önerileri container'ı bul
+        suggestionsScrollView = keyboardView.findViewById(R.id.suggestions_scroll)
+        suggestionsContainer = keyboardView.findViewById(R.id.suggestions_container)
         
         // Tuş dinleyicilerini ayarla
         setupKeyListeners(keyboardView)
@@ -212,6 +278,9 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
         currentSuggestions = wordDatabase.getPossibleWords(currentInput.toString())
         currentSuggestionIndex = 0
         
+        // Önerileri güncelle
+        updateSuggestions(currentSuggestions)
+        
         if (currentSuggestions.isNotEmpty()) {
             // İlk öneriyi göster (composing text olarak)
             val suggestion = currentSuggestions[0]
@@ -273,6 +342,9 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
         currentSuggestionIndex = (currentSuggestionIndex + 1) % currentSuggestions.size
         val suggestion = currentSuggestions[currentSuggestionIndex]
         currentInputConnection?.setComposingText(suggestion, 1)
+        
+        // Önerileri güncelle (seçili öneriyi vurgula)
+        updateSuggestions(currentSuggestions)
     }
     
     private fun acceptSuggestion() {
@@ -283,6 +355,7 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
             wordDatabase.updateWordFrequency(word)
             currentInput.clear()
             currentSuggestions = emptyList()
+            updateSuggestions(emptyList())
         }
     }
     
@@ -303,6 +376,7 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
         currentInputConnection?.commitText(" ", 1)
         currentInput.clear()
         currentSuggestions = emptyList()
+        updateSuggestions(emptyList())
     }
     
     private fun onBackspacePressed() {
@@ -313,6 +387,7 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
             if (currentInput.isNotEmpty() && isT9Mode) {
                 // Yeni öneriler al
                 currentSuggestions = wordDatabase.getPossibleWords(currentInput.toString())
+                updateSuggestions(currentSuggestions)
                 if (currentSuggestions.isNotEmpty()) {
                     currentInputConnection?.setComposingText(currentSuggestions[0], 1)
                 } else {
@@ -320,6 +395,7 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
                 }
             } else {
                 currentInputConnection?.setComposingText("", 1)
+                updateSuggestions(emptyList())
             }
         } else {
             // Normal backspace
@@ -349,6 +425,7 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
         super.onStartInputView(info, restarting)
         currentInput.clear()
         currentSuggestions = emptyList()
+        updateSuggestions(emptyList())
         isShiftActive = false
     }
 }

@@ -5,6 +5,9 @@
     android:orientation="vertical"
     style="@style/KeyboardBase">
 
+    <!-- Kelime Önerileri Satırı -->
+    <include layout="@layout/suggestions_bar" />
+
     <!-- Mod Değiştirme Satırı -->
     <LinearLayout
         android:layout_width="match_parent"

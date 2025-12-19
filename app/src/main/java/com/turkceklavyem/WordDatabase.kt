@@ -14,6 +14,11 @@ class WordDatabase private constructor() {
         // T9 tuş dizileri için kelimeler - genişletilmiş
         // "6375222" -> "merhaba"
         put("6375222", mutableListOf("merhaba"))
+        put("6372", mutableListOf("mera", "merk"))
+        put("63726", mutableListOf("merak", "meran"))
+        put("637746", mutableListOf("mersin"))
+        put("63726", mutableListOf("meram", "merak"))
+        
         put("72526", mutableListOf("salam", "salak"))
         put("6376", mutableListOf("merk", "nerk"))
         put("626", mutableListOf("mam", "nan"))
