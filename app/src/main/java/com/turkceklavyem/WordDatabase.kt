@@ -219,11 +219,17 @@ class WordDatabase private constructor() {
         }
         
         // Prefix bazlı eşleşmeleri de ekle (kombinasyonların prefix'i ile başlayan kelimeler)
+        // Optimize: single pass with early termination
         if (matchedWords.size < 4 && combinations.isNotEmpty()) {
-            val prefixes = combinations.map { it.joinToString("").lowercase() }.filter { it.length >= 2 }
-            for (prefix in prefixes.take(3)) {
-                allWords.filter { it.lowercase().startsWith(prefix) }
-                    .forEach { matchedWords.add(it) }
+            val prefixes = combinations.take(3).map { it.joinToString("").lowercase() }.filter { it.length >= 2 }
+            for (prefix in prefixes) {
+                if (matchedWords.size >= 4) break
+                for (word in allWords) {
+                    if (matchedWords.size >= 4) break
+                    if (word.lowercase().startsWith(prefix)) {
+                        matchedWords.add(word)
+                    }
+                }
             }
         }
         

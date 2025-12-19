@@ -206,7 +206,6 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
         
         // Ensure at least 3 suggestions are visible - add placeholders if needed
         val minSuggestions = 3
-        val actualSuggestionCount = suggestions.size
         val suggestionsToShow = if (suggestions.size >= minSuggestions) {
             suggestions.take(4)
         } else {
