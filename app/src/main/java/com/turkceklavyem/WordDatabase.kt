@@ -293,6 +293,33 @@ class WordDatabase private constructor() {
     }
     
     /**
+     * Assets klasöründen Türkçe kelime listesini yükler
+     * @param context Android context
+     */
+    fun loadWordsFromAssets(context: android.content.Context) {
+        try {
+            val inputStream = context.assets.open("turkce_kelime_listesi.txt")
+            val words = inputStream.bufferedReader().use { it.readLines() }
+            
+            var loadedCount = 0
+            for (word in words) {
+                val cleanWord = word.trim().lowercase()
+                if (cleanWord.isNotEmpty() && cleanWord.length >= 2) {
+                    // Sadece Türkçe karakterler içeren kelimeleri al
+                    if (cleanWord.matches(Regex("[a-zçğıöşü\\s]+"))) {
+                        addWordToDatabase(cleanWord)
+                        loadedCount++
+                    }
+                }
+            }
+            
+            android.util.Log.d("WordDatabase", "Loaded $loadedCount words from turkce_kelime_listesi.txt")
+        } catch (e: Exception) {
+            android.util.Log.e("WordDatabase", "Error loading word list from assets", e)
+        }
+    }
+    
+    /**
      * Öğrenilen kelimeleri temizler
      */
     fun clearLearnedWords() {

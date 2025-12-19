@@ -87,6 +87,9 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
         prefs.registerOnSharedPreferenceChangeListener(this)
         longPressPopupManager = LongPressPopupManager(this)
         loadPreferences()
+        
+        // Türkçe kelime listesini assets'ten yükle
+        wordDatabase.loadWordsFromAssets(this)
     }
     
     override fun onDestroy() {
