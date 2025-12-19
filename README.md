@@ -58,6 +58,18 @@ Ayarlar menüsünden klavyenizi kişiselleştirin:
 - **Geri Bildirim:** Titreşim ve ses ayarları
 - **Kelime Tahmini:** Açma/kapama ve öğrenilen kelimeleri temizleme
 
+### Sözlük İçe Aktarma
+Kendi kelime listenizi oluşturun:
+- **TXT Dosyası İçe Aktarma:** Ana ekrandan "📚 Sözlük İçe Aktar" butonuna tıklayın
+- **Dosya Seçimi:** TXT veya PDF dosyanızı seçin (TXT önerilir)
+- **Otomatik İşleme:** 
+  - Sadece Türkçe karakterler korunur (a-z, ç, ğ, ı, ö, ş, ü)
+  - En az 2 harfli kelimeler eklenir
+  - Tekrar eden kelimeler otomatik elenir
+  - Her kelime T9 tuş dizisine eşlenir
+- **Sonuç:** İçe aktarılan kelimeler T9 modunda öneri olarak görünür
+- **Örnek Kullanım:** Tıp, hukuk, teknik terimler gibi özel sözlükler oluşturabilirsiniz
+
 ## 🎨 Tasarım ve Tema
 
 ### Modern Material Design
@@ -100,12 +112,12 @@ Uygulama, profesyonel bir görünüm için Material Design prensipleriyle tasarl
 - ✅ **Ayarlar Ekranı** - Titreşim, ses ve diğer tercihleri özelleştirme
 - ✅ **Klavye Yükseklik Ayarlama** - %50-100 arası ayarlanabilir
 - ✅ **Tema Özelleştirme** - Açık, Koyu, Mavi, Yeşil temalar
+- ✅ **Sözlük İçe Aktarma** - TXT/PDF dosyalarından kelime ekleme
 
 ### Gelecek Özellikler (TODO)
 - 🔄 Sayı satırı opsiyonu (üst kısımda 0-9) - ayarlarda hazır
-- 🔄 PDF okuma ve kelime öğrenme (altyapı hazır)
-- 🔄 SQLite/Room veritabanı entegrasyonu
-- 🔄 Daha geniş Türkçe sözlük dosyası
+- 🔄 SQLite/Room veritabanı entegrasyonu (kalıcı sözlük)
+- 🔄 Gelişmiş PDF okuma desteği (Apache PDFBox)
 - 🔄 Sembol klavyesi (12# tuşu) - gelişmiş mod
 - 🔄 Emoji desteği
 
