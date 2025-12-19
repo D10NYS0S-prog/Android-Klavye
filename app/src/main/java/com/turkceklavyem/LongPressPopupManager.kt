@@ -17,6 +17,10 @@ class LongPressPopupManager(private val context: Context) {
     
     private var currentPopup: PopupWindow? = null
     
+    companion object {
+        private const val POPUP_VERTICAL_OFFSET_DP = 150
+    }
+    
     // Tuş ID'lerine göre popup karakterleri
     private val popupCharacters = mapOf(
         // T9 tuşları için
@@ -84,8 +88,9 @@ class LongPressPopupManager(private val context: Context) {
             true
         ).apply {
             elevation = 10f
-            // Popup'ı tuşun üstünde göster
-            showAsDropDown(anchorView, 0, -(anchorView.height + 150), Gravity.CENTER)
+            // Popup'ı tuşun üstünde göster (dp to px conversion)
+            val offsetPx = (POPUP_VERTICAL_OFFSET_DP * context.resources.displayMetrics.density).toInt()
+            showAsDropDown(anchorView, 0, -(anchorView.height + offsetPx), Gravity.CENTER)
         }
     }
     

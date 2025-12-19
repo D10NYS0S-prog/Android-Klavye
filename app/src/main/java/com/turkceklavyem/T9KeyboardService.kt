@@ -129,12 +129,12 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
                 setPadding(24, 8, 24, 8)
                 isAllCaps = false
                 
-                // İlk öneriye vurgu yap
+                // İlk öneriye vurgu yap - tema uyumlu
                 if (index == 0) {
-                    setBackgroundColor(Color.parseColor("#6200EE"))
+                    setBackgroundColor(resources.getColor(R.color.suggestion_primary, null))
                     setTextColor(Color.WHITE)
                 } else {
-                    setBackgroundColor(Color.parseColor("#F5F5F5"))
+                    setBackgroundColor(resources.getColor(R.color.suggestion_secondary, null))
                     setTextColor(Color.BLACK)
                 }
                 
@@ -191,12 +191,15 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
     }
     
     private fun applyKeyboardHeight(view: View) {
-        // Klavye yüksekliğini yüzde olarak uygula
+        // Klavye yüksekliğini yüzde olarak uygula (maksimum 400dp)
         val params = view.layoutParams
         if (params != null) {
             val displayMetrics = resources.displayMetrics
             val screenHeight = displayMetrics.heightPixels
-            val newHeight = (screenHeight * keyboardHeight / 100).toInt()
+            // Maksimum yükseklik: 400dp
+            val maxHeight = (400 * displayMetrics.density).toInt()
+            val calculatedHeight = (screenHeight * keyboardHeight / 100).toInt()
+            val newHeight = minOf(calculatedHeight, maxHeight)
             params.height = newHeight
             view.layoutParams = params
         }

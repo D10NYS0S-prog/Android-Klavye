@@ -15,9 +15,8 @@ class WordDatabase private constructor() {
         // "6375222" -> "merhaba"
         put("6375222", mutableListOf("merhaba"))
         put("6372", mutableListOf("mera", "merk"))
-        put("63726", mutableListOf("merak", "meran"))
+        put("63726", mutableListOf("merak", "meran", "meram"))
         put("637746", mutableListOf("mersin"))
-        put("63726", mutableListOf("meram", "merak"))
         
         put("72526", mutableListOf("salam", "salak"))
         put("6376", mutableListOf("merk", "nerk"))
