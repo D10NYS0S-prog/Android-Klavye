@@ -135,6 +135,34 @@ class WordDatabase private constructor() {
     }
     
     /**
+     * Prefix ile başlayan kelimeleri döndürür (T12 modu için)
+     * @param prefix Kelime ön eki
+     * @return Ön ekle başlayan kelime listesi
+     */
+    fun getWordsByPrefix(prefix: String): List<String> {
+        if (prefix.isEmpty() || prefix.length < 2) return emptyList()
+        
+        val words = mutableSetOf<String>()
+        val lowerPrefix = prefix.lowercase()
+        
+        // Tüm kelimelerden prefix ile başlayanları bul
+        turkishWords.values.flatten().forEach { word ->
+            if (word.lowercase().startsWith(lowerPrefix)) {
+                words.add(word)
+            }
+        }
+        
+        learnedWords.values.flatten().forEach { word ->
+            if (word.lowercase().startsWith(lowerPrefix)) {
+                words.add(word)
+            }
+        }
+        
+        // Sıklığa göre sırala
+        return words.toList().sortedByDescending { wordFrequency[it] ?: 0 }
+    }
+    
+    /**
      * Kullanıcı tercihlerine göre kelime sıklığını günceller
      * @param word Seçilen kelime
      */

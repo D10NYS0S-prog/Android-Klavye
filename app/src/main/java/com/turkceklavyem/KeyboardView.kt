@@ -92,15 +92,20 @@ fun getCharacterForKeyPress(key: Int, pressCount: Int): Char? {
  */
 fun getT12Character(chars: String, pressCount: Int, isShiftActive: Boolean = false): Char? {
     if (chars.isEmpty()) return null
-    val index = (pressCount - 1) % chars.length
-    var char = chars[index]
     
-    // Shift aktifse ve küçük harfse büyük harfe çevir
-    if (isShiftActive && char.isLowerCase()) {
-        char = char.uppercaseChar()
+    // Shift aktifse, büyük harf karakterlerini kullan
+    val availableChars = if (isShiftActive) {
+        // Sadece büyük harfleri ve büyük harf versiyonu olan karakterleri al
+        chars.filter { it.isUpperCase() || (!it.isLetter() && it.uppercaseChar() in chars) }
+    } else {
+        // Sadece küçük harfleri ve küçük harf versiyonu olan karakterleri al
+        chars.filter { it.isLowerCase() || (!it.isLetter()) }
     }
     
-    return char
+    if (availableChars.isEmpty()) return null
+    
+    val index = (pressCount - 1) % availableChars.length
+    return availableChars[index]
 }
 
 /**

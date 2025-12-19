@@ -29,12 +29,20 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
     private var currentSuggestions: List<String> = emptyList()
     private var currentSuggestionIndex = 0
     
-    // Kelime önerileri için (T9 modunda)
+    // Kelime önerileri için (T9 ve T12 modunda)
     private var suggestionsContainer: LinearLayout? = null
     private var suggestionsScrollView: HorizontalScrollView? = null
     
+    // T12 özel öneri butonları
+    private var suggestion1Button: Button? = null
+    private var suggestion2Button: Button? = null
+    private var suggestion3Button: Button? = null
+    private var suggestion4Button: Button? = null
+    private var settingsButton: Button? = null
+    
     // Klavye içi ayarlar (T12 modunda)
     private var inKeyboardSettingsPanel: View? = null
+    private var isSettingsPanelVisible = false
     
     // Uzun basış popup için
     private lateinit var longPressPopupManager: LongPressPopupManager
@@ -163,6 +171,132 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
         }
     }
     
+    private fun setupT12SuggestionButtons() {
+        // Öneri butonlarını ayarla
+        listOf(suggestion1Button, suggestion2Button, suggestion3Button, suggestion4Button).forEach { button ->
+            button?.setOnClickListener {
+                val word = it.tag as? String
+                if (word != null) {
+                    onT12SuggestionClicked(word)
+                }
+            }
+        }
+        
+        // Ayarlar butonunu ayarla
+        settingsButton?.setOnClickListener {
+            toggleSettingsPanel()
+        }
+    }
+    
+    private fun updateT12Suggestions(suggestions: List<String>) {
+        val buttons = listOf(suggestion1Button, suggestion2Button, suggestion3Button, suggestion4Button)
+        
+        suggestions.take(4).forEachIndexed { index, word ->
+            buttons[index]?.apply {
+                text = word
+                tag = word
+                visibility = View.VISIBLE
+            }
+        }
+        
+        // Kullanılmayan butonları gizle
+        for (i in suggestions.size until 4) {
+            buttons[i]?.visibility = View.GONE
+        }
+    }
+    
+    private fun onT12SuggestionClicked(word: String) {
+        performHapticFeedback()
+        playSoundEffect()
+        
+        // Yazılan metni temizle ve öneriyi ekle
+        val deletedChars = currentInput.length
+        if (deletedChars > 0) {
+            currentInputConnection?.deleteSurroundingText(deletedChars, 0)
+        }
+        
+        currentInputConnection?.commitText(word + " ", 1)
+        wordDatabase.updateWordFrequency(word)
+        currentInput.clear()
+        currentSuggestions = emptyList()
+        updateT12Suggestions(emptyList())
+        
+        // Otomatik öğrenme
+        if (isLearningEnabled) {
+            lastCommittedWord.clear()
+            lastCommittedWord.append(word)
+        }
+    }
+    
+    private fun toggleSettingsPanel() {
+        performHapticFeedback()
+        
+        if (isSettingsPanelVisible) {
+            hideSettingsPanel()
+        } else {
+            showSettingsPanel()
+        }
+    }
+    
+    private fun showSettingsPanel() {
+        if (inKeyboardSettingsPanel == null) {
+            val inflater = LayoutInflater.from(this)
+            inKeyboardSettingsPanel = inflater.inflate(R.layout.in_keyboard_settings_panel, null)
+            setupSettingsPanelButtons()
+        }
+        
+        // Mevcut klavye görünümünün yerine ayarlar panelini göster
+        setInputView(inKeyboardSettingsPanel)
+        isSettingsPanelVisible = true
+    }
+    
+    private fun hideSettingsPanel() {
+        setInputView(onCreateInputView())
+        isSettingsPanelVisible = false
+    }
+    
+    private fun setupSettingsPanelButtons() {
+        inKeyboardSettingsPanel?.apply {
+            findViewById<Button>(R.id.btn_mode_switch)?.setOnClickListener {
+                toggleMode()
+                hideSettingsPanel()
+            }
+            
+            findViewById<Button>(R.id.btn_height_adjust)?.setOnClickListener {
+                // Klavye boyutunu değiştir (cycle through: 60%, 80%, 100%)
+                keyboardHeight = when (keyboardHeight) {
+                    60 -> 80
+                    80 -> 100
+                    else -> 60
+                }
+                prefs.edit().putInt("keyboard_height", keyboardHeight).apply()
+                hideSettingsPanel()
+            }
+            
+            findViewById<Button>(R.id.btn_feedback_settings)?.setOnClickListener {
+                // Titreşim ve ses ayarlarını değiştir
+                vibrateOnKeypress = !vibrateOnKeypress
+                prefs.edit().putBoolean("vibrate_on", vibrateOnKeypress).apply()
+            }
+            
+            findViewById<Button>(R.id.btn_theme_settings)?.setOnClickListener {
+                // Temayı değiştir (cycle through: light, dark, blue, green)
+                keyboardTheme = when (keyboardTheme) {
+                    "light" -> "dark"
+                    "dark" -> "blue"
+                    "blue" -> "green"
+                    else -> "light"
+                }
+                prefs.edit().putString("keyboard_theme", keyboardTheme).apply()
+                hideSettingsPanel()
+            }
+            
+            findViewById<Button>(R.id.btn_close_settings)?.setOnClickListener {
+                hideSettingsPanel()
+            }
+        }
+    }
+    
     private fun onSuggestionClicked(word: String) {
         performHapticFeedback()
         playSoundEffect()
@@ -198,6 +332,15 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
         if (isT9Mode) {
             suggestionsScrollView = keyboardView.findViewById(R.id.suggestions_scroll)
             suggestionsContainer = keyboardView.findViewById(R.id.suggestions_container)
+        } else {
+            // T12 modunda öneri butonlarını ve ayarlar butonunu bul
+            suggestion1Button = keyboardView.findViewById(R.id.suggestion_1)
+            suggestion2Button = keyboardView.findViewById(R.id.suggestion_2)
+            suggestion3Button = keyboardView.findViewById(R.id.suggestion_3)
+            suggestion4Button = keyboardView.findViewById(R.id.suggestion_4)
+            settingsButton = keyboardView.findViewById(R.id.settings_button)
+            
+            setupT12SuggestionButtons()
         }
         
         // Tuş dinleyicilerini ayarla
@@ -366,16 +509,16 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
             R.id.key_er to "erER",
             R.id.key_ty to "tyTY",
             R.id.key_ui to "uıUİ",
-            R.id.key_op to "opöOPÖ",
+            R.id.key_op to "opOP",
             R.id.key_as to "asAS",
             R.id.key_df to "dfDF",
-            R.id.key_gh to "gğhGĞH",
+            R.id.key_gh to "ghGH",
             R.id.key_jk to "jkJK",
             R.id.key_l to "l-L_",
             R.id.key_zx to "zxZX",
-            R.id.key_cv to "cçvCÇV",
+            R.id.key_cv to "cvCV",
             R.id.key_bn to "bnBN",
-            R.id.key_m to "m'öM'Ö"
+            R.id.key_m to "m'M'"
         )
         
         keyMap.forEach { (keyId, chars) ->
@@ -483,12 +626,18 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
             // Önceki karakteri sil
             currentInputConnection?.deleteSurroundingText(1, 0)
             
+            // currentInput'tan son karakteri sil
+            if (currentInput.isNotEmpty()) {
+                currentInput.deleteCharAt(currentInput.length - 1)
+            }
+            
             // Yeni karakteri ekle
             val char = getT12Character(chars, currentPressCount, isShiftActive)
             currentInputConnection?.commitText(char.toString(), 1)
+            currentInput.append(char)
             
             // Otomatik öğrenme için karakter ekle
-            if (isLearningEnabled) {
+            if (isLearningEnabled && lastCommittedWord.isNotEmpty()) {
                 lastCommittedWord.deleteCharAt(lastCommittedWord.length - 1)
                 lastCommittedWord.append(char)
             }
@@ -500,6 +649,7 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
             currentPressCount = 1
             val char = getT12Character(chars, currentPressCount, isShiftActive)
             currentInputConnection?.commitText(char.toString(), 1)
+            currentInput.append(char)
             
             // Otomatik öğrenme için karakter ekle
             if (isLearningEnabled) {
@@ -509,6 +659,16 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
         
         lastPressedKey = keyId
         lastPressTime = currentTime
+        
+        // T12 modunda kelime önerileri al
+        if (currentInput.length >= 2) {
+            val inputText = currentInput.toString().lowercase()
+            currentSuggestions = wordDatabase.getWordsByPrefix(inputText).take(4)
+            updateT12Suggestions(currentSuggestions)
+        } else {
+            currentSuggestions = emptyList()
+            updateT12Suggestions(emptyList())
+        }
         
         // Shift'i tek kullanım için kapat
         if (isShiftActive) {
@@ -566,26 +726,41 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
         )?.text?.toString() ?: ""
         
         if (currentInput.isNotEmpty()) {
-            // T9 modunda önerilen kelimeyi kabul et ve öğren
-            if (currentSuggestions.isNotEmpty()) {
-                val word = currentSuggestions[0]
-                currentInputConnection?.finishComposingText()
-                
-                // Otomatik öğrenme
+            if (isT9Mode) {
+                // T9 modunda önerilen kelimeyi kabul et ve öğren
+                if (currentSuggestions.isNotEmpty()) {
+                    val word = currentSuggestions[0]
+                    currentInputConnection?.finishComposingText()
+                    
+                    // Otomatik öğrenme
+                    if (isLearningEnabled && word.length >= 2) {
+                        wordDatabase.addWordToDatabase(word)
+                        lastCommittedWord.clear()
+                        lastCommittedWord.append(word)
+                    }
+                } else {
+                    currentInputConnection?.finishComposingText()
+                }
+            } else {
+                // T12 modunda yazılan kelimeyi öğren
+                val word = currentInput.toString()
                 if (isLearningEnabled && word.length >= 2) {
                     wordDatabase.addWordToDatabase(word)
                     lastCommittedWord.clear()
                     lastCommittedWord.append(word)
                 }
-            } else {
-                currentInputConnection?.finishComposingText()
             }
         }
         
         currentInputConnection?.commitText(" ", 1)
         currentInput.clear()
         currentSuggestions = emptyList()
-        updateSuggestions(emptyList())
+        
+        if (isT9Mode) {
+            updateSuggestions(emptyList())
+        } else {
+            updateT12Suggestions(emptyList())
+        }
     }
     
     private fun onBackspacePressed() {
@@ -593,18 +768,37 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
             // Henüz commit edilmemiş metin varsa
             currentInput.deleteCharAt(currentInput.length - 1)
             
-            if (currentInput.isNotEmpty() && isT9Mode) {
-                // Yeni öneriler al
-                currentSuggestions = wordDatabase.getPossibleWords(currentInput.toString())
-                updateSuggestions(currentSuggestions)
-                if (currentSuggestions.isNotEmpty()) {
-                    currentInputConnection?.setComposingText(currentSuggestions[0], 1)
+            // T12 modunda da silme işlemi yap
+            currentInputConnection?.deleteSurroundingText(1, 0)
+            
+            if (currentInput.isNotEmpty()) {
+                if (isT9Mode) {
+                    // T9 modunda yeni öneriler al
+                    currentSuggestions = wordDatabase.getPossibleWords(currentInput.toString())
+                    updateSuggestions(currentSuggestions)
+                    if (currentSuggestions.isNotEmpty()) {
+                        currentInputConnection?.setComposingText(currentSuggestions[0], 1)
+                    } else {
+                        currentInputConnection?.setComposingText(currentInput.toString(), 1)
+                    }
                 } else {
-                    currentInputConnection?.setComposingText(currentInput.toString(), 1)
+                    // T12 modunda yeni öneriler al
+                    if (currentInput.length >= 2) {
+                        val inputText = currentInput.toString().lowercase()
+                        currentSuggestions = wordDatabase.getWordsByPrefix(inputText).take(4)
+                        updateT12Suggestions(currentSuggestions)
+                    } else {
+                        currentSuggestions = emptyList()
+                        updateT12Suggestions(emptyList())
+                    }
                 }
             } else {
-                currentInputConnection?.setComposingText("", 1)
-                updateSuggestions(emptyList())
+                if (isT9Mode) {
+                    currentInputConnection?.setComposingText("", 1)
+                    updateSuggestions(emptyList())
+                } else {
+                    updateT12Suggestions(emptyList())
+                }
             }
         } else {
             // Normal backspace
