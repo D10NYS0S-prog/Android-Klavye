@@ -3,6 +3,8 @@ package com.turkceklavyem
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.PreferenceFragmentCompat
+import android.app.AlertDialog
+import android.widget.Toast
 
 /**
  * Klavye ayarları ekranı
@@ -47,17 +49,17 @@ class SettingsActivity : AppCompatActivity() {
         }
         
         private fun clearLearnedWords() {
-            val builder = android.app.AlertDialog.Builder(requireContext())
+            val builder = AlertDialog.Builder(requireContext())
             builder.setTitle("Öğrenilen Kelimeleri Sil")
             builder.setMessage("Klavyenin öğrendiği tüm kelimeler silinecek. Devam etmek istiyor musunuz?")
             builder.setPositiveButton("Evet") { _, _ ->
                 // Kelime veritabanını sıfırla - singleton kullan
                 WordDatabase.getInstance().clearLearnedWords()
                 
-                android.widget.Toast.makeText(
+                Toast.makeText(
                     requireContext(),
                     "Öğrenilen kelimeler silindi",
-                    android.widget.Toast.LENGTH_SHORT
+                    Toast.LENGTH_SHORT
                 ).show()
             }
             builder.setNegativeButton("İptal", null)
