@@ -214,10 +214,8 @@ class WordDatabase private constructor() {
         
         for (combo in combinations) {
             val word = combo.joinToString("").lowercase()
-            // Tam eşleşme kontrolü
-            if (allWords.any { it.lowercase() == word }) {
-                allWords.find { it.lowercase() == word }?.let { matchedWords.add(it) }
-            }
+            // Tam eşleşme kontrolü - tek iterasyonda hem kontrol hem al
+            allWords.firstOrNull { it.lowercase() == word }?.let { matchedWords.add(it) }
         }
         
         // Prefix bazlı eşleşmeleri de ekle (kombinasyonların prefix'i ile başlayan kelimeler)

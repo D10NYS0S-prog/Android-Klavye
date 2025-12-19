@@ -206,6 +206,7 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
         
         // Ensure at least 3 suggestions are visible - add placeholders if needed
         val minSuggestions = 3
+        val actualSuggestionCount = suggestions.size
         val suggestionsToShow = if (suggestions.size >= minSuggestions) {
             suggestions.take(4)
         } else {
@@ -229,8 +230,8 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
             }
         }
         
-        // Hide any extra buttons beyond our suggestions
-        for (i in suggestionsToShow.size until 4) {
+        // Hide any extra buttons beyond our minimum display count (after 4th button)
+        for (i in 4 until buttons.size) {
             buttons[i]?.visibility = View.GONE
         }
     }
