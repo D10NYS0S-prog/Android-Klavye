@@ -5,10 +5,7 @@
     android:orientation="vertical"
     style="@style/KeyboardBase">
 
-    <!-- Kelime Önerileri Satırı -->
-    <include layout="@layout/suggestions_bar" />
-
-    <!-- Mod Değiştirme Satırı -->
+    <!-- Satır 1: Kelime Tahminleri ve Ayarlar -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -16,16 +13,59 @@
         android:gravity="center"
         android:layout_marginBottom="4dp">
 
+        <!-- Kelime tahmini butonları (4 adet) -->
         <Button
-            android:id="@+id/mode_switch"
-            android:layout_width="match_parent"
-            android:layout_height="45dp"
-            android:text="T9/T12"
-            android:textSize="12sp"
+            android:id="@+id/suggestion_1"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:text=""
+            android:textSize="14sp"
+            android:visibility="gone"
+            style="@style/KeyBase" />
+
+        <Button
+            android:id="@+id/suggestion_2"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:text=""
+            android:textSize="14sp"
+            android:visibility="gone"
+            style="@style/KeyBase" />
+
+        <Button
+            android:id="@+id/suggestion_3"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:text=""
+            android:textSize="14sp"
+            android:visibility="gone"
+            style="@style/KeyBase" />
+
+        <Button
+            android:id="@+id/suggestion_4"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:text=""
+            android:textSize="14sp"
+            android:visibility="gone"
+            style="@style/KeyBase" />
+
+        <!-- Ayarlar butonu -->
+        <Button
+            android:id="@+id/btn_settings"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:text="⚙"
+            android:textSize="18sp"
             style="@style/KeyFunctional" />
     </LinearLayout>
 
-    <!-- 1. Satır: qw, er, ty, uı, op -->
+    <!-- Satır 2: qw, er, ty, ui, op -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -74,7 +114,7 @@
             style="@style/KeyBase" />
     </LinearLayout>
 
-    <!-- 2. Satır: as, df, gh, jk, l- -->
+    <!-- Satır 3: as, df, gh, jk, l- -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -123,7 +163,7 @@
             style="@style/KeyBase" />
     </LinearLayout>
 
-    <!-- 3. Satır: shift, zx, cv, bn, m', backspace -->
+    <!-- Satır 4: ⇧, zx, cv, bn, m', ⌫ -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -135,7 +175,7 @@
             android:id="@+id/key_shift"
             android:layout_width="0dp"
             android:layout_height="@dimen/key_height"
-            android:layout_weight="1.2"
+            android:layout_weight="1"
             android:text="⇧"
             android:textSize="20sp"
             style="@style/KeyFunctional" />
@@ -176,13 +216,13 @@
             android:id="@+id/key_backspace"
             android:layout_width="0dp"
             android:layout_height="@dimen/key_height"
-            android:layout_weight="1.2"
+            android:layout_weight="1"
             android:text="⌫"
             android:textSize="20sp"
             style="@style/KeyFunctional" />
     </LinearLayout>
 
-    <!-- 4. Satır: 12#, comma, space, dot, enter -->
+    <!-- Satır 5: 12#, ,, boşluk, ., ↵ -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -193,7 +233,7 @@
             android:id="@+id/key_symbols"
             android:layout_width="0dp"
             android:layout_height="50dp"
-            android:layout_weight="1.2"
+            android:layout_weight="1"
             android:text="12#"
             android:textSize="14sp"
             style="@style/KeyFunctional" />
@@ -211,7 +251,7 @@
             android:id="@+id/key_space"
             android:layout_width="0dp"
             android:layout_height="50dp"
-            android:layout_weight="3"
+            android:layout_weight="2"
             android:text="Boşluk"
             style="@style/KeySpace" />
 
@@ -228,9 +268,15 @@
             android:id="@+id/key_enter"
             android:layout_width="0dp"
             android:layout_height="50dp"
-            android:layout_weight="1.2"
+            android:layout_weight="1"
             android:text="↵"
             android:textSize="20sp"
             style="@style/KeyFunctional" />
     </LinearLayout>
+    
+    <!-- Klavye içi ayarlar paneli (başlangıçta gizli) -->
+    <include 
+        android:id="@+id/in_keyboard_settings"
+        layout="@layout/in_keyboard_settings_panel"
+        android:visibility="gone" />
 </LinearLayout>
