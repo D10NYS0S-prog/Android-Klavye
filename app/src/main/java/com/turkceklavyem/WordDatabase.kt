@@ -5,8 +5,9 @@ package com.turkceklavyem
  * 
  * Bu sınıf T9/T12 sisteminde kelime tahminleri için kullanılır.
  * Basit bir in-memory sözlük ile başlayıp, ileride SQLite/Room entegrasyonu yapılabilir.
+ * Singleton pattern kullanılarak tüm uygulamada tek bir instance kullanılır.
  */
-class WordDatabase {
+class WordDatabase private constructor() {
     
     // Temel Türkçe kelime sözlüğü (demo amaçlı)
     private val turkishWords = mutableMapOf<String, MutableList<String>>().apply {
@@ -71,6 +72,17 @@ class WordDatabase {
     
     init {
         initialize()
+    }
+    
+    companion object {
+        @Volatile
+        private var INSTANCE: WordDatabase? = null
+        
+        fun getInstance(): WordDatabase {
+            return INSTANCE ?: synchronized(this) {
+                INSTANCE ?: WordDatabase().also { INSTANCE = it }
+            }
+        }
     }
     
     /**

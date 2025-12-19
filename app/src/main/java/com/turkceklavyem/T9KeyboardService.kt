@@ -9,17 +9,19 @@ import android.widget.Button
 import android.os.Handler
 import android.os.Looper
 import android.os.Vibrator
+import android.os.VibrationEffect
+import android.os.Build
 import android.media.AudioManager
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
 
-class T9KeyboardService : InputMethodService() {
+class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPreferenceChangeListener {
     
     private var isT9Mode = true  // true = T9 modu, false = T12 modu
     private var isShiftActive = false  // Shift tuşu aktif mi
     private var currentInput = StringBuilder()
-    private val wordDatabase = WordDatabase()
+    private val wordDatabase = WordDatabase.getInstance()
     private var currentKeyboardView: View? = null
     private var currentSuggestions: List<String> = emptyList()
     private var currentSuggestionIndex = 0
@@ -45,7 +47,21 @@ class T9KeyboardService : InputMethodService() {
         vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
         audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
         prefs = PreferenceManager.getDefaultSharedPreferences(this)
+        prefs.registerOnSharedPreferenceChangeListener(this)
         loadPreferences()
+    }
+    
+    override fun onDestroy() {
+        super.onDestroy()
+        prefs.unregisterOnSharedPreferenceChangeListener(this)
+        commitRunnable?.let { handler.removeCallbacks(it) }
+    }
+    
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
+        // Ayarlar değiştiğinde tercihleri yeniden yükle
+        when (key) {
+            "vibrate_on", "sound_on" -> loadPreferences()
+        }
     }
     
     private fun loadPreferences() {
@@ -55,7 +71,15 @@ class T9KeyboardService : InputMethodService() {
     
     private fun performHapticFeedback() {
         if (vibrateOnKeypress && vibrator.hasVibrator()) {
-            vibrator.vibrate(50) // 50ms vibrasyon
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                // Android 8.0+ için yeni API
+                val effect = VibrationEffect.createOneShot(50, VibrationEffect.DEFAULT_AMPLITUDE)
+                vibrator.vibrate(effect)
+            } else {
+                // Eski cihazlar için deprecated method
+                @Suppress("DEPRECATION")
+                vibrator.vibrate(50)
+            }
         }
     }
     
@@ -326,10 +350,5 @@ class T9KeyboardService : InputMethodService() {
         currentInput.clear()
         currentSuggestions = emptyList()
         isShiftActive = false
-    }
-    
-    override fun onDestroy() {
-        super.onDestroy()
-        commitRunnable?.let { handler.removeCallbacks(it) }
     }
 }

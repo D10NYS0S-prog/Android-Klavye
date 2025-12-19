@@ -51,9 +51,8 @@ class SettingsActivity : AppCompatActivity() {
             builder.setTitle("Öğrenilen Kelimeleri Sil")
             builder.setMessage("Klavyenin öğrendiği tüm kelimeler silinecek. Devam etmek istiyor musunuz?")
             builder.setPositiveButton("Evet") { _, _ ->
-                // Kelime veritabanını sıfırla
-                val wordDb = WordDatabase()
-                wordDb.clearLearnedWords()
+                // Kelime veritabanını sıfırla - singleton kullan
+                WordDatabase.getInstance().clearLearnedWords()
                 
                 android.widget.Toast.makeText(
                     requireContext(),
