@@ -163,6 +163,76 @@ class WordDatabase private constructor() {
     }
     
     /**
+     * T16 tuş dizisinden kelime önerileri üretir
+     * @param keySequence T16 tuş isimleri dizisi (örn: ["m", "er", "er", "gh", "as", "bn", "as"])
+     * @return Olası kelime listesi
+     */
+    fun getWordsFromT16KeySequence(keySequence: List<String>): List<String> {
+        if (keySequence.isEmpty()) return emptyList()
+        
+        // T16 tuş eşlemeleri
+        val keyToChars = mapOf(
+            "qw" to "qw",
+            "er" to "er",
+            "ty" to "ty",
+            "ui" to "uı",
+            "op" to "op",
+            "as" to "as",
+            "df" to "df",
+            "gh" to "gh",
+            "jk" to "jk",
+            "l" to "l",
+            "zx" to "zx",
+            "cv" to "cv",
+            "bn" to "bn",
+            "m" to "m"
+        )
+        
+        // Her tuş için olası karakterleri al
+        val possibleCharsPerKey = keySequence.map { key ->
+            val normalizedKey = key.replace("key_", "").lowercase()
+            keyToChars[normalizedKey]?.toList() ?: listOf()
+        }
+        
+        // Olası kombinasyonları oluştur
+        val combinations = generateCombinations(possibleCharsPerKey)
+        
+        // Sözlükte var olan kelimeleri bul
+        val matchedWords = mutableSetOf<String>()
+        val allWords = turkishWords.values.flatten() + learnedWords.values.flatten()
+        
+        for (combo in combinations) {
+            val word = combo.joinToString("")
+            if (allWords.contains(word)) {
+                matchedWords.add(word)
+            }
+        }
+        
+        // Sıklığa göre sırala
+        return matchedWords.toList().sortedByDescending { wordFrequency[it] ?: 0 }
+    }
+    
+    /**
+     * Karakter listelerinden tüm kombinasyonları üretir
+     */
+    private fun generateCombinations(charLists: List<List<Char>>): List<List<Char>> {
+        if (charLists.isEmpty()) return listOf(emptyList())
+        if (charLists.size == 1) return charLists[0].map { listOf(it) }
+        
+        val result = mutableListOf<List<Char>>()
+        val firstChars = charLists[0]
+        val remainingCombos = generateCombinations(charLists.drop(1))
+        
+        for (char in firstChars) {
+            for (combo in remainingCombos) {
+                result.add(listOf(char) + combo)
+            }
+        }
+        
+        return result
+    }
+    
+    /**
      * Kullanıcı tercihlerine göre kelime sıklığını günceller
      * @param word Seçilen kelime
      */

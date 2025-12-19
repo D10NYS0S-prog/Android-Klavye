@@ -36,6 +36,9 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
     private var currentSuggestions: List<String> = emptyList()
     private var currentSuggestionIndex = 0
     
+    // T16 tuş dizisi takibi (auto-correction için)
+    private val t16KeySequence = mutableListOf<String>()
+    
     // Kelime önerileri için (T9 modunda)
     private var suggestionsContainer: LinearLayout? = null
     private var suggestionsScrollView: HorizontalScrollView? = null
@@ -677,6 +680,9 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
         
         val currentTime = System.currentTimeMillis()
         
+        // Tuş adını normalize et (key_qw -> qw)
+        val normalizedKeyId = keyId.replace("key_", "").lowercase()
+        
         // Aynı tuşa çabuk basıldıysa çoklu basış
         if (keyId == lastPressedKey && (currentTime - lastPressTime) < multiTapDelay) {
             currentPressCount++
@@ -703,7 +709,16 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
             // Zamanlayıcıyı iptal et
             commitRunnable?.let { handler.removeCallbacks(it) }
         } else {
-            // Yeni tuş basıldı
+            // Yeni tuş basıldı - tuş dizisine ekle
+            if (lastPressedKey != null) {
+                // Önceki tuştan sonra yeni tuş, diziye ekle
+                t16KeySequence.add(normalizedKeyId)
+            } else {
+                // İlk tuş
+                t16KeySequence.clear()
+                t16KeySequence.add(normalizedKeyId)
+            }
+            
             currentPressCount = 1
             val char = getT16Character(chars, currentPressCount, isShiftActive)
             currentInputConnection?.commitText(char.toString(), 1)
@@ -718,11 +733,25 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
         lastPressedKey = keyId
         lastPressTime = currentTime
         
-        // T12 modunda kelime önerileri al
-        if (currentInput.length >= 2) {
+        // T16 modunda otomatik düzeltme: tuş dizisinden kelime tahminleri al
+        if (t16KeySequence.size >= 2) {
+            // Tuş dizisinden olası kelimeleri bul
+            val keySequenceWords = wordDatabase.getWordsFromT16KeySequence(t16KeySequence)
+            
+            // Prefix tabanlı önerileri de al
             val inputText = currentInput.toString().lowercase()
-            currentSuggestions = wordDatabase.getWordsByPrefix(inputText).take(4)
+            val prefixWords = wordDatabase.getWordsByPrefix(inputText).take(4)
+            
+            // Her iki yöntemi birleştir, tuş dizisi eşleşmeleri öncelikli
+            val combinedSuggestions = (keySequenceWords + prefixWords).distinct().take(4)
+            currentSuggestions = combinedSuggestions
             updateT16Suggestions(currentSuggestions)
+            
+            // Eğer tuş dizisinden tam eşleşme varsa, ilk öneriyi vurgula
+            if (keySequenceWords.isNotEmpty()) {
+                // İlk öneri en iyi eşleşme - kullanıcı isterse bunu seçebilir
+                // veya boşluk tuşuna basınca otomatik olarak uygulanır
+            }
         } else {
             currentSuggestions = emptyList()
             updateT16Suggestions(emptyList())
@@ -845,6 +874,7 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
         currentInputConnection?.commitText(" ", 1)
         currentInput.clear()
         currentSuggestions = emptyList()
+        t16KeySequence.clear()  // T16 tuş dizisini temizle
         
         if (currentMode == KeyboardMode.T9) {
             updateSuggestions(emptyList())
@@ -857,6 +887,11 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
         if (currentInput.isNotEmpty()) {
             // Henüz commit edilmemiş metin varsa
             currentInput.deleteCharAt(currentInput.length - 1)
+            
+            // T16 tuş dizisinden de son tuşu sil
+            if (t16KeySequence.isNotEmpty()) {
+                t16KeySequence.removeAt(t16KeySequence.size - 1)
+            }
             
             // T16 ve Standard modunda da silme işlemi yap
             currentInputConnection?.deleteSurroundingText(1, 0)
@@ -871,8 +906,21 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
                     } else {
                         currentInputConnection?.setComposingText(currentInput.toString(), 1)
                     }
+                } else if (currentMode == KeyboardMode.T16) {
+                    // T16 modunda tuş dizisine göre öneriler al
+                    if (t16KeySequence.size >= 2) {
+                        val keySequenceWords = wordDatabase.getWordsFromT16KeySequence(t16KeySequence)
+                        val inputText = currentInput.toString().lowercase()
+                        val prefixWords = wordDatabase.getWordsByPrefix(inputText).take(4)
+                        val combinedSuggestions = (keySequenceWords + prefixWords).distinct().take(4)
+                        currentSuggestions = combinedSuggestions
+                        updateT16Suggestions(currentSuggestions)
+                    } else {
+                        currentSuggestions = emptyList()
+                        updateT16Suggestions(emptyList())
+                    }
                 } else {
-                    // T16 ve Standard modunda yeni öneriler al
+                    // Standard modunda prefix bazlı öneriler al
                     if (currentInput.length >= 2) {
                         val inputText = currentInput.toString().lowercase()
                         currentSuggestions = wordDatabase.getWordsByPrefix(inputText).take(4)
@@ -915,6 +963,7 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
         isShiftActive = false
         currentInput.clear()
         currentSuggestions = emptyList()
+        t16KeySequence.clear()  // T16 tuş dizisini temizle
         // Klavye görünümünü yeniden oluştur
         setInputView(onCreateInputView())
     }
@@ -923,6 +972,7 @@ class T9KeyboardService : InputMethodService(), SharedPreferences.OnSharedPrefer
         super.onStartInputView(info, restarting)
         currentInput.clear()
         currentSuggestions = emptyList()
+        t16KeySequence.clear()  // T16 tuş dizisini temizle
         updateSuggestions(emptyList())
         isShiftActive = false
     }
